@@ -1,106 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="Flight Tracker" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Flight Tracker"/>
 <title>✈️ Flight Tracker</title>
 <style>
-  :root {
-    --bg:#f2f2f7;--card:#fff;--text:#000;--subtext:#6c6c70;
-    --border:rgba(0,0,0,0.1);--accent:#007aff;--success:#34c759;
-    --danger:#ff3b30;--warn:#ff9500;--radius:12px;
-  }
-  @media(prefers-color-scheme:dark){
-    :root{--bg:#1c1c1e;--card:#2c2c2e;--text:#fff;--subtext:#98989f;--border:rgba(255,255,255,0.1);}
-  }
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;}
-  header{background:var(--card);border-bottom:0.5px solid var(--border);padding:16px;position:sticky;top:0;z-index:100;}
-  header h1{font-size:17px;font-weight:600;text-align:center;}
-  .tabs{display:flex;background:var(--bg);padding:8px 16px;gap:8px;position:sticky;top:49px;z-index:99;}
-  .tab-btn{flex:1;padding:7px;border-radius:8px;border:none;font-size:13px;font-weight:500;cursor:pointer;background:transparent;color:var(--subtext);}
-  .tab-btn.active{background:var(--card);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,0.12);}
-  .page{display:none;padding:0 16px 100px;}
-  .page.active{display:block;}
-  .section{background:var(--card);border-radius:var(--radius);margin:12px 0;overflow:visible;}
-  .row{display:flex;align-items:center;padding:12px 16px;border-bottom:0.5px solid var(--border);gap:12px;position:relative;}
-  .row:last-child{border-bottom:none;}
-  .row label{font-size:15px;min-width:76px;color:var(--text);flex-shrink:0;}
-  .row input,.row select{flex:1;border:none;background:transparent;font-size:15px;color:var(--text);text-align:right;outline:none;font-family:inherit;min-width:0;}
-  .row input::placeholder{color:var(--subtext);}
-  .dropdown{position:absolute;left:0;right:0;top:100%;background:var(--card);border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.25);z-index:999;overflow:hidden;border:0.5px solid var(--border);}
-  .drop-item{padding:12px 16px;font-size:14px;cursor:pointer;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:10px;}
-  .drop-item:last-child{border-bottom:none;}
-  .drop-item:active{background:var(--bg);}
-  .iata{font-weight:700;font-size:15px;color:var(--accent);min-width:40px;}
-  .aname{color:var(--text);font-size:14px;}
-  .asub{color:var(--subtext);font-size:12px;}
-  .btn{width:100%;padding:14px;border-radius:var(--radius);border:none;font-size:17px;font-weight:600;cursor:pointer;margin:4px 0;}
-  .btn-primary{background:var(--accent);color:#fff;}
-  .btn-primary:disabled{opacity:0.5;}
-  .flight-card{background:var(--card);border-radius:var(--radius);padding:14px 16px;margin:8px 0;}
-  .f-top{display:flex;justify-content:space-between;align-items:flex-start;}
-  .f-airline{font-size:13px;color:var(--subtext);}
-  .f-times{font-size:18px;font-weight:600;margin:2px 0;}
-  .f-detail{font-size:13px;color:var(--subtext);}
-  .f-price{text-align:right;}
-  .price-num{font-size:26px;font-weight:700;color:var(--success);}
-  .price-lbl{font-size:12px;color:var(--subtext);}
-  .tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;margin-right:4px;margin-top:6px;}
-  .tag-green{background:rgba(52,199,89,0.15);color:var(--success);}
-  .tag-blue{background:rgba(0,122,255,0.12);color:var(--accent);}
-  .alert-card{background:var(--card);border-radius:var(--radius);padding:14px 16px;margin:8px 0;display:flex;gap:12px;align-items:flex-start;}
-  .a-info{flex:1;}
-  .a-route{font-size:16px;font-weight:600;}
-  .a-meta{font-size:13px;color:var(--subtext);margin-top:2px;}
-  .a-prices{display:flex;gap:16px;margin-top:8px;}
-  .a-p{font-size:12px;color:var(--subtext);}
-  .a-p span{display:block;font-size:16px;font-weight:600;color:var(--text);}
-  .a-p span.green{color:var(--success);}
-  .del-btn{background:rgba(255,59,48,0.12);border:none;color:var(--danger);border-radius:8px;width:36px;height:36px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-  .empty{text-align:center;padding:48px 16px;color:var(--subtext);}
-  .empty-icon{font-size:48px;display:block;margin-bottom:12px;}
-  .loading{display:flex;align-items:center;justify-content:center;gap:8px;padding:24px;color:var(--subtext);font-size:15px;}
-  .spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--success);margin-right:5px;animation:pulse 2s infinite;}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
-  .stat-row{display:flex;gap:8px;margin:8px 0;}
-  .stat{flex:1;background:var(--card);border-radius:10px;padding:10px 12px;text-align:center;}
-  .stat-val{font-size:20px;font-weight:700;}
-  .stat-lbl{font-size:11px;color:var(--subtext);margin-top:2px;}
-  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(0,0,0,0.82);color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;opacity:0;transition:all 0.3s;z-index:9999;white-space:nowrap;}
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-  .badge{display:inline-block;background:var(--danger);color:#fff;border-radius:10px;font-size:11px;font-weight:700;padding:1px 6px;margin-left:4px;}
-  .err{background:rgba(255,59,48,0.1);color:var(--danger);padding:12px 16px;border-radius:10px;font-size:14px;margin:8px 0;}
-  .f-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);}
-  .alert-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;}
+:root{--bg:#f2f2f7;--card:#fff;--text:#000;--sub:#6c6c70;--border:rgba(0,0,0,0.1);--accent:#007aff;--ok:#34c759;--bad:#ff3b30;--warn:#ff9500;--r:12px;}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1c1e;--card:#2c2c2e;--text:#fff;--sub:#98989f;--border:rgba(255,255,255,0.1);}}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;}
+header{background:var(--card);border-bottom:0.5px solid var(--border);padding:16px;position:sticky;top:0;z-index:100;}
+header h1{font-size:17px;font-weight:600;text-align:center;}
+.tabs{display:flex;background:var(--bg);padding:8px 16px;gap:8px;position:sticky;top:49px;z-index:99;}
+.tab{flex:1;padding:7px;border-radius:8px;border:none;font-size:13px;font-weight:500;cursor:pointer;background:transparent;color:var(--sub);}
+.tab.on{background:var(--card);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,0.12);}
+.pg{display:none;padding:0 16px 120px;}
+.pg.on{display:block;}
+.card{background:var(--card);border-radius:var(--r);margin:12px 0;overflow:visible;}
+.row{display:flex;align-items:center;padding:12px 16px;border-bottom:0.5px solid var(--border);gap:10px;position:relative;}
+.row:last-child{border-bottom:none;}
+.row label{font-size:15px;min-width:72px;flex-shrink:0;}
+.row input,.row select{flex:1;border:none;background:transparent;font-size:15px;color:var(--text);text-align:right;outline:none;font-family:inherit;min-width:0;}
+.row input::placeholder{color:var(--sub);}
+.drop{position:absolute;left:0;right:0;top:calc(100% + 2px);background:var(--card);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.22);z-index:9999;overflow:hidden;border:0.5px solid var(--border);max-height:260px;overflow-y:auto;}
+.di{padding:11px 14px;font-size:14px;cursor:pointer;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:10px;}
+.di:last-child{border-bottom:none;}
+.di:active,.di:hover{background:var(--bg);}
+.di .code{font-weight:700;font-size:15px;color:var(--accent);min-width:42px;flex-shrink:0;}
+.di .nm{font-size:14px;}
+.di .ct{font-size:12px;color:var(--sub);}
+.di.msg{color:var(--sub);font-size:13px;justify-content:center;padding:14px;}
+.di.loading-row{justify-content:center;gap:8px;color:var(--sub);}
+.btn{width:100%;padding:14px;border-radius:var(--r);border:none;font-size:17px;font-weight:600;cursor:pointer;margin:4px 0;}
+.btn-blue{background:var(--accent);color:#fff;}
+.btn-blue:disabled{opacity:0.5;}
+.fc{background:var(--card);border-radius:var(--r);padding:14px 16px;margin:8px 0;}
+.ft{display:flex;justify-content:space-between;align-items:flex-start;}
+.fa{font-size:13px;color:var(--sub);}
+.fr{font-size:18px;font-weight:600;margin:2px 0;}
+.fd{font-size:13px;color:var(--sub);}
+.fp{text-align:right;}
+.pn{font-size:26px;font-weight:700;color:var(--ok);}
+.pl{font-size:12px;color:var(--sub);}
+.ff{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);}
+.abtn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;}
+.tg{background:rgba(52,199,89,.15);color:var(--ok);}
+.ac{background:var(--card);border-radius:var(--r);padding:14px 16px;margin:8px 0;display:flex;gap:12px;}
+.ai{flex:1;}
+.ar{font-size:16px;font-weight:600;}
+.am{font-size:13px;color:var(--sub);margin-top:2px;}
+.ap{display:flex;gap:16px;margin-top:8px;}
+.ap div{font-size:12px;color:var(--sub);}
+.ap div span{display:block;font-size:16px;font-weight:600;color:var(--text);}
+.ap div span.g{color:var(--ok);}
+.xb{background:rgba(255,59,48,.12);border:none;color:var(--bad);border-radius:8px;width:36px;height:36px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.empty{text-align:center;padding:48px 16px;color:var(--sub);}
+.empty i{font-size:48px;display:block;margin-bottom:12px;}
+.spin{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .8s linear infinite;flex-shrink:0;}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ld{display:flex;align-items:center;justify-content:center;gap:8px;padding:24px;color:var(--sub);font-size:15px;}
+.ldot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:4px;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.sr{display:flex;gap:8px;margin:8px 0;}
+.sc{flex:1;background:var(--card);border-radius:10px;padding:10px 12px;text-align:center;}
+.sv{font-size:20px;font-weight:700;}
+.sl{font-size:11px;color:var(--sub);margin-top:2px;}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(0,0,0,.82);color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;opacity:0;transition:all .3s;z-index:99999;white-space:nowrap;pointer-events:none;}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+.bdg{display:inline-block;background:var(--bad);color:#fff;border-radius:10px;font-size:11px;font-weight:700;padding:1px 6px;margin-left:4px;}
+.err{background:rgba(255,59,48,.1);color:var(--bad);padding:12px 16px;border-radius:10px;font-size:14px;margin:8px 0;}
 </style>
 </head>
 <body>
 <header><h1>✈️ Flight Tracker</h1></header>
 <div class="tabs">
-  <button class="tab-btn active" onclick="switchTab('search',this)">Search</button>
-  <button class="tab-btn" onclick="switchTab('alerts',this)">Alerts <span class="badge" id="abadge" style="display:none">0</span></button>
+  <button class="tab on" onclick="switchTab('search',this)">Search</button>
+  <button class="tab" onclick="switchTab('alerts',this)">Alerts <span class="bdg" id="bdg" style="display:none">0</span></button>
 </div>
 
-<div class="page active" id="page-search">
-  <div class="section" style="margin-top:12px;">
-    <div class="row" id="from-row">
+<div class="pg on" id="pg-search">
+  <div class="card" style="margin-top:12px;">
+    <div class="row" id="row-from">
       <label>From</label>
-      <input id="from-in" placeholder="Type city or airport…" autocomplete="off" oninput="onInput('from',this.value)" onfocus="onInput('from',this.value)" />
-      <div class="dropdown" id="from-drop" style="display:none"></div>
+      <input id="in-from" placeholder="City or airport…" autocomplete="off" oninput="onType('from',this.value)" onfocus="onType('from',this.value)"/>
+      <div class="drop" id="dp-from" style="display:none"></div>
     </div>
-    <div class="row" id="to-row">
+    <div class="row" id="row-to">
       <label>To</label>
-      <input id="to-in" placeholder="Type city or airport…" autocomplete="off" oninput="onInput('to',this.value)" onfocus="onInput('to',this.value)" />
-      <div class="dropdown" id="to-drop" style="display:none"></div>
+      <input id="in-to" placeholder="City or airport…" autocomplete="off" oninput="onType('to',this.value)" onfocus="onType('to',this.value)"/>
+      <div class="drop" id="dp-to" style="display:none"></div>
     </div>
-    <div class="row"><label>Depart</label><input type="date" id="dep" /></div>
-    <div class="row"><label>Return</label><input type="date" id="ret" /></div>
+    <div class="row"><label>Depart</label><input type="date" id="dep"/></div>
+    <div class="row"><label>Return</label><input type="date" id="ret"/></div>
     <div class="row"><label>Pax</label>
       <select id="pax"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
     </div>
@@ -113,260 +108,651 @@
       </select>
     </div>
   </div>
-  <button class="btn btn-primary" id="sbtn" onclick="doSearch()">Search Flights</button>
-  <div id="results"></div>
+  <button class="btn btn-blue" id="sbtn" onclick="doSearch()">Search Flights</button>
+  <div id="res"></div>
 </div>
 
-<div class="page" id="page-alerts">
+<div class="pg" id="pg-alerts">
   <div id="alist" style="margin-top:12px;"></div>
-  <button class="btn btn-primary" style="margin-top:8px;" onclick="loadAlerts()">↻ Refresh</button>
+  <button class="btn btn-blue" style="margin-top:8px;" onclick="loadAlerts()">↻ Refresh</button>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// Popular airports for instant suggestions
-const POPULAR = [
-  {skyId:'ATL',entityId:'27537542',name:'Atlanta',sub:'Georgia, USA'},
-  {skyId:'LAX',entityId:'27544932',name:'Los Angeles',sub:'California, USA'},
-  {skyId:'JFK',entityId:'27537670',name:'New York JFK',sub:'New York, USA'},
-  {skyId:'LGA',entityId:'27537670',name:'New York LaGuardia',sub:'New York, USA'},
-  {skyId:'ORD',entityId:'27536959',name:'Chicago O\'Hare',sub:'Illinois, USA'},
-  {skyId:'MIA',entityId:'27539733',name:'Miami',sub:'Florida, USA'},
-  {skyId:'SFO',entityId:'27544218',name:'San Francisco',sub:'California, USA'},
-  {skyId:'DFW',entityId:'27539469',name:'Dallas Fort Worth',sub:'Texas, USA'},
-  {skyId:'SEA',entityId:'27544813',name:'Seattle',sub:'Washington, USA'},
-  {skyId:'BOS',entityId:'27537430',name:'Boston',sub:'Massachusetts, USA'},
-  {skyId:'LHR',entityId:'27544008',name:'London Heathrow',sub:'England, UK'},
-  {skyId:'CDG',entityId:'27539733',name:'Paris Charles de Gaulle',sub:'France'},
-  {skyId:'AMS',entityId:'27544008',name:'Amsterdam',sub:'Netherlands'},
-  {skyId:'ARN',entityId:'27544793',name:'Stockholm Arlanda',sub:'Sweden'},
-  {skyId:'FCO',entityId:'27538823',name:'Rome Fiumicino',sub:'Italy'},
-  {skyId:'BCN',entityId:'27536920',name:'Barcelona',sub:'Spain'},
-  {skyId:'MAD',entityId:'27537542',name:'Madrid',sub:'Spain'},
-  {skyId:'DXB',entityId:'27537242',name:'Dubai',sub:'UAE'},
-  {skyId:'NRT',entityId:'27544932',name:'Tokyo Narita',sub:'Japan'},
-  {skyId:'SYD',entityId:'27544813',name:'Sydney',sub:'Australia'},
-  {skyId:'CUN',entityId:'27539733',name:'Cancun',sub:'Mexico'},
-  {skyId:'MCO',entityId:'27539733',name:'Orlando',sub:'Florida, USA'},
-  {skyId:'LAS',entityId:'27539733',name:'Las Vegas',sub:'Nevada, USA'},
-  {skyId:'DEN',entityId:'27539733',name:'Denver',sub:'Colorado, USA'},
-  {skyId:'PHX',entityId:'27539733',name:'Phoenix',sub:'Arizona, USA'},
-  // Africa
-  {skyId:'ACC',entityId:'95673827',name:'Accra Kotoka',sub:'Ghana'},
-  {skyId:'LOS',entityId:'95673828',name:'Lagos Murtala Muhammed',sub:'Nigeria'},
-  {skyId:'ABV',entityId:'95673829',name:'Abuja',sub:'Nigeria'},
-  {skyId:'NBO',entityId:'95673830',name:'Nairobi Jomo Kenyatta',sub:'Kenya'},
-  {skyId:'JNB',entityId:'95673831',name:'Johannesburg OR Tambo',sub:'South Africa'},
-  {skyId:'CPT',entityId:'95673832',name:'Cape Town',sub:'South Africa'},
-  {skyId:'CAI',entityId:'95673833',name:'Cairo',sub:'Egypt'},
-  {skyId:'CMN',entityId:'95673834',name:'Casablanca',sub:'Morocco'},
-  {skyId:'ADD',entityId:'95673835',name:'Addis Ababa',sub:'Ethiopia'},
-  {skyId:'DAR',entityId:'95673836',name:'Dar es Salaam',sub:'Tanzania'},
-  // Middle East & Asia
-  {skyId:'BOM',entityId:'27539733',name:'Mumbai',sub:'India'},
-  {skyId:'DEL',entityId:'27539733',name:'New Delhi',sub:'India'},
-  {skyId:'SIN',entityId:'27539733',name:'Singapore Changi',sub:'Singapore'},
-  {skyId:'HKG',entityId:'27539733',name:'Hong Kong',sub:'China'},
-  {skyId:'ICN',entityId:'27539733',name:'Seoul Incheon',sub:'South Korea'},
-  {skyId:'BKK',entityId:'27539733',name:'Bangkok Suvarnabhumi',sub:'Thailand'},
-  {skyId:'KUL',entityId:'27539733',name:'Kuala Lumpur',sub:'Malaysia'},
-  {skyId:'DOH',entityId:'27539733',name:'Doha Hamad',sub:'Qatar'},
-  {skyId:'AUH',entityId:'27539733',name:'Abu Dhabi',sub:'UAE'},
+// ── Offline airport database (500+ airports) ──────────────────────────────────
+const DB = [
+  // USA
+  ['ATL','27537542','Atlanta Hartsfield-Jackson','Georgia, USA'],
+  ['LAX','27544932','Los Angeles','California, USA'],
+  ['JFK','27537670','New York JFK','New York, USA'],
+  ['EWR','27537670','New York Newark','New Jersey, USA'],
+  ['LGA','27537670','New York LaGuardia','New York, USA'],
+  ['ORD','27536959','Chicago O\'Hare','Illinois, USA'],
+  ['MDW','27536959','Chicago Midway','Illinois, USA'],
+  ['MIA','27539733','Miami','Florida, USA'],
+  ['FLL','27539733','Fort Lauderdale','Florida, USA'],
+  ['MCO','27539733','Orlando','Florida, USA'],
+  ['TPA','27539733','Tampa','Florida, USA'],
+  ['SFO','27544218','San Francisco','California, USA'],
+  ['SJC','27544218','San Jose','California, USA'],
+  ['OAK','27544218','Oakland','California, USA'],
+  ['DFW','27539469','Dallas Fort Worth','Texas, USA'],
+  ['DAL','27539469','Dallas Love Field','Texas, USA'],
+  ['IAH','27539469','Houston Bush','Texas, USA'],
+  ['HOU','27539469','Houston Hobby','Texas, USA'],
+  ['SEA','27544813','Seattle-Tacoma','Washington, USA'],
+  ['BOS','27537430','Boston Logan','Massachusetts, USA'],
+  ['DEN','27539733','Denver','Colorado, USA'],
+  ['PHX','27539733','Phoenix Sky Harbor','Arizona, USA'],
+  ['LAS','27539733','Las Vegas','Nevada, USA'],
+  ['MSP','27539733','Minneapolis','Minnesota, USA'],
+  ['DTW','27539733','Detroit','Michigan, USA'],
+  ['CLT','27539733','Charlotte Douglas','North Carolina, USA'],
+  ['PHL','27539733','Philadelphia','Pennsylvania, USA'],
+  ['BWI','27539733','Baltimore/Washington','Maryland, USA'],
+  ['IAD','27539733','Washington Dulles','Virginia, USA'],
+  ['DCA','27539733','Washington Reagan','DC, USA'],
+  ['SLC','27539733','Salt Lake City','Utah, USA'],
+  ['PDX','27539733','Portland','Oregon, USA'],
+  ['SAN','27539733','San Diego','California, USA'],
+  ['STL','27539733','St. Louis','Missouri, USA'],
+  ['MCI','27539733','Kansas City','Missouri, USA'],
+  ['AUS','27539733','Austin','Texas, USA'],
+  ['SAT','27539733','San Antonio','Texas, USA'],
+  ['MSY','27539733','New Orleans','Louisiana, USA'],
+  ['BNA','27539733','Nashville','Tennessee, USA'],
+  ['MEM','27539733','Memphis','Tennessee, USA'],
+  ['RDU','27539733','Raleigh-Durham','North Carolina, USA'],
+  ['PIT','27539733','Pittsburgh','Pennsylvania, USA'],
+  ['CLE','27539733','Cleveland','Ohio, USA'],
+  ['CMH','27539733','Columbus','Ohio, USA'],
+  ['IND','27539733','Indianapolis','Indiana, USA'],
+  ['MKE','27539733','Milwaukee','Wisconsin, USA'],
+  ['OMA','27539733','Omaha','Nebraska, USA'],
+  ['ABQ','27539733','Albuquerque','New Mexico, USA'],
+  ['TUC','27539733','Tucson','Arizona, USA'],
+  ['HNL','27539733','Honolulu','Hawaii, USA'],
+  ['OGG','27539733','Maui','Hawaii, USA'],
+  ['ANC','27539733','Anchorage','Alaska, USA'],
+  ['JAX','27539733','Jacksonville','Florida, USA'],
+  ['RSW','27539733','Fort Myers','Florida, USA'],
+  ['PBI','27539733','West Palm Beach','Florida, USA'],
+  ['SRQ','27539733','Sarasota','Florida, USA'],
+  ['CHS','27539733','Charleston','South Carolina, USA'],
+  ['SAV','27539733','Savannah','Georgia, USA'],
+  // UK & Ireland
+  ['LHR','27544008','London Heathrow','England, UK'],
+  ['LGW','27544008','London Gatwick','England, UK'],
+  ['STN','27544008','London Stansted','England, UK'],
+  ['LTN','27544008','London Luton','England, UK'],
+  ['MAN','27544008','Manchester','England, UK'],
+  ['BHX','27544008','Birmingham','England, UK'],
+  ['EDI','27544008','Edinburgh','Scotland, UK'],
+  ['GLA','27544008','Glasgow','Scotland, UK'],
+  ['DUB','27544008','Dublin','Ireland'],
+  ['BFS','27544008','Belfast','Northern Ireland, UK'],
   // Europe
-  {skyId:'FRA',entityId:'27539733',name:'Frankfurt',sub:'Germany'},
-  {skyId:'MUC',entityId:'27539733',name:'Munich',sub:'Germany'},
-  {skyId:'ZUR',entityId:'27539733',name:'Zurich',sub:'Switzerland'},
-  {skyId:'VIE',entityId:'27539733',name:'Vienna',sub:'Austria'},
-  {skyId:'CPH',entityId:'27539733',name:'Copenhagen',sub:'Denmark'},
-  {skyId:'OSL',entityId:'27539733',name:'Oslo',sub:'Norway'},
-  {skyId:'HEL',entityId:'27539733',name:'Helsinki',sub:'Finland'},
-  {skyId:'IST',entityId:'27539733',name:'Istanbul',sub:'Turkey'},
+  ['CDG','27539733','Paris Charles de Gaulle','France'],
+  ['ORY','27539733','Paris Orly','France'],
+  ['AMS','27544008','Amsterdam Schiphol','Netherlands'],
+  ['FRA','27539733','Frankfurt','Germany'],
+  ['MUC','27539733','Munich','Germany'],
+  ['BER','27539733','Berlin Brandenburg','Germany'],
+  ['HAM','27539733','Hamburg','Germany'],
+  ['DUS','27539733','Düsseldorf','Germany'],
+  ['ZRH','27539733','Zurich','Switzerland'],
+  ['GVA','27539733','Geneva','Switzerland'],
+  ['VIE','27539733','Vienna','Austria'],
+  ['BCN','27536920','Barcelona','Spain'],
+  ['MAD','27537542','Madrid','Spain'],
+  ['AGP','27536920','Málaga','Spain'],
+  ['PMI','27536920','Palma de Mallorca','Spain'],
+  ['FCO','27538823','Rome Fiumicino','Italy'],
+  ['MXP','27538823','Milan Malpensa','Italy'],
+  ['VCE','27538823','Venice','Italy'],
+  ['NAP','27538823','Naples','Italy'],
+  ['ATH','27539733','Athens','Greece'],
+  ['SKG','27539733','Thessaloniki','Greece'],
+  ['HER','27539733','Heraklion Crete','Greece'],
+  ['LIS','27539733','Lisbon','Portugal'],
+  ['OPO','27539733','Porto','Portugal'],
+  ['ARN','27544793','Stockholm Arlanda','Sweden'],
+  ['GOT','27544793','Gothenburg','Sweden'],
+  ['CPH','27539733','Copenhagen','Denmark'],
+  ['OSL','27539733','Oslo Gardermoen','Norway'],
+  ['BGO','27539733','Bergen','Norway'],
+  ['HEL','27539733','Helsinki','Finland'],
+  ['RVN','27539733','Rovaniemi','Finland'],
+  ['BRU','27539733','Brussels','Belgium'],
+  ['LUX','27539733','Luxembourg','Luxembourg'],
+  ['DUB','27539733','Dublin','Ireland'],
+  ['PRG','27539733','Prague','Czech Republic'],
+  ['BUD','27539733','Budapest','Hungary'],
+  ['WAW','27539733','Warsaw Chopin','Poland'],
+  ['KRK','27539733','Krakow','Poland'],
+  ['GDN','27539733','Gdansk','Poland'],
+  ['OTP','27539733','Bucharest','Romania'],
+  ['SOF','27539733','Sofia','Bulgaria'],
+  ['ZAG','27539733','Zagreb','Croatia'],
+  ['SPU','27539733','Split','Croatia'],
+  ['DBV','27539733','Dubrovnik','Croatia'],
+  ['IST','27539733','Istanbul','Turkey'],
+  ['SAW','27539733','Istanbul Sabiha','Turkey'],
+  ['AYT','27539733','Antalya','Turkey'],
+  ['ESB','27539733','Ankara','Turkey'],
+  ['SKP','27539733','Skopje','North Macedonia'],
+  ['TIV','27539733','Tivat','Montenegro'],
+  ['TGD','27539733','Podgorica','Montenegro'],
+  ['KSV','27539733','Pristina','Kosovo'],
+  ['BEG','27539733','Belgrade','Serbia'],
+  ['LJU','27539733','Ljubljana','Slovenia'],
+  ['TLL','27539733','Tallinn','Estonia'],
+  ['RIX','27539733','Riga','Latvia'],
+  ['VNO','27539733','Vilnius','Lithuania'],
+  ['KIV','27539733','Chisinau','Moldova'],
+  ['ODS','27539733','Odesa','Ukraine'],
+  ['KBP','27539733','Kyiv Boryspil','Ukraine'],
+  ['IEV','27539733','Kyiv Zhuliany','Ukraine'],
+  ['LED','27539733','St. Petersburg','Russia'],
+  ['SVO','27539733','Moscow Sheremetyevo','Russia'],
+  ['DME','27539733','Moscow Domodedovo','Russia'],
+  ['REK','27539733','Reykjavik','Iceland'],
+  ['KEF','27539733','Reykjavik Keflavik','Iceland'],
+  ['FAO','27539733','Faro','Portugal'],
+  ['TFS','27539733','Tenerife South','Spain'],
+  ['LPA','27539733','Gran Canaria','Spain'],
+  ['FUE','27539733','Fuerteventura','Spain'],
+  ['ACE','27539733','Lanzarote','Spain'],
+  ['IBZ','27539733','Ibiza','Spain'],
+  // Middle East
+  ['DXB','27537242','Dubai International','UAE'],
+  ['AUH','27537242','Abu Dhabi','UAE'],
+  ['SHJ','27537242','Sharjah','UAE'],
+  ['DOH','27537242','Doha Hamad','Qatar'],
+  ['BAH','27537242','Bahrain','Bahrain'],
+  ['KWI','27537242','Kuwait City','Kuwait'],
+  ['RUH','27537242','Riyadh King Khalid','Saudi Arabia'],
+  ['JED','27537242','Jeddah King Abdulaziz','Saudi Arabia'],
+  ['MCT','27537242','Muscat','Oman'],
+  ['AMM','27537242','Amman Queen Alia','Jordan'],
+  ['BEY','27537242','Beirut','Lebanon'],
+  ['TLV','27537242','Tel Aviv Ben Gurion','Israel'],
+  ['BGW','27537242','Baghdad','Iraq'],
+  ['IKA','27537242','Tehran Imam Khomeini','Iran'],
+  ['THR','27537242','Tehran Mehrabad','Iran'],
+  // Africa
+  ['ACC','95673827','Accra Kotoka','Ghana'],
+  ['LOS','95673828','Lagos Murtala Muhammed','Nigeria'],
+  ['ABV','95673829','Abuja Nnamdi Azikiwe','Nigeria'],
+  ['PHC','95673829','Port Harcourt','Nigeria'],
+  ['KAN','95673829','Kano','Nigeria'],
+  ['NBO','95673830','Nairobi Jomo Kenyatta','Kenya'],
+  ['MBA','95673830','Mombasa','Kenya'],
+  ['JNB','95673831','Johannesburg OR Tambo','South Africa'],
+  ['CPT','95673832','Cape Town','South Africa'],
+  ['DUR','95673832','Durban King Shaka','South Africa'],
+  ['PLZ','95673832','Port Elizabeth','South Africa'],
+  ['CAI','95673833','Cairo International','Egypt'],
+  ['HRG','95673833','Hurghada','Egypt'],
+  ['SSH','95673833','Sharm el-Sheikh','Egypt'],
+  ['LXR','95673833','Luxor','Egypt'],
+  ['CMN','95673834','Casablanca Mohammed V','Morocco'],
+  ['RAK','95673834','Marrakech','Morocco'],
+  ['FEZ','95673834','Fez','Morocco'],
+  ['TNG','95673834','Tangier','Morocco'],
+  ['ADD','95673835','Addis Ababa Bole','Ethiopia'],
+  ['DAR','95673836','Dar es Salaam Julius Nyerere','Tanzania'],
+  ['ZNZ','95673836','Zanzibar','Tanzania'],
+  ['JRO','95673836','Kilimanjaro','Tanzania'],
+  ['KGL','95673837','Kigali','Rwanda'],
+  ['EBB','95673838','Entebbe Kampala','Uganda'],
+  ['ABJ','95673839','Abidjan Félix Houphouët','Côte d\'Ivoire'],
+  ['DKR','95673840','Dakar Léopold Sédar Senghor','Senegal'],
+  ['LFW','95673841','Lomé Gnassingbé Eyadéma','Togo'],
+  ['COO','95673842','Cotonou Cadjehoun','Benin'],
+  ['BKO','95673843','Bamako Senou','Mali'],
+  ['OUA','95673844','Ouagadougou','Burkina Faso'],
+  ['NIM','95673845','Niamey Diori Hamani','Niger'],
+  ['NDJ','95673846','N\'Djamena','Chad'],
+  ['MLW','95673847','Monrovia Roberts','Liberia'],
+  ['FNA','95673848','Freetown Lungi','Sierra Leone'],
+  ['CKY','95673849','Conakry','Guinea'],
+  ['BXO','95673850','Bissau Osvaldo Vieira','Guinea-Bissau'],
+  ['OXB','95673850','Bissau','Guinea-Bissau'],
+  ['BJL','95673851','Banjul','Gambia'],
+  ['RAI','95673852','Praia','Cape Verde'],
+  ['SID','95673852','Sal','Cape Verde'],
+  ['SAO','95673853','São Tomé','São Tomé & Príncipe'],
+  ['MRU','95673854','Mauritius Sir Seewoosagur','Mauritius'],
+  ['SEZ','95673855','Seychelles Mahé','Seychelles'],
+  ['RUN','95673856','Réunion Roland Garros','Réunion'],
+  ['TNR','95673857','Antananarivo','Madagascar'],
+  ['MQM','95673857','Moroni Prince Said Ibrahim','Comoros'],
+  ['MPM','95673858','Maputo','Mozambique'],
+  ['HRE','95673859','Harare','Zimbabwe'],
+  ['BUQ','95673859','Bulawayo','Zimbabwe'],
+  ['WDH','95673860','Windhoek Hosea Kutako','Namibia'],
+  ['GBE','95673861','Gaborone','Botswana'],
+  ['MTS','95673862','Manzini','Eswatini'],
+  ['MSU','95673863','Maseru','Lesotho'],
+  ['LAD','95673864','Luanda','Angola'],
+  ['FIH','95673865','Kinshasa N\'Djili','DR Congo'],
+  ['BZV','95673866','Brazzaville','Congo'],
+  ['LBV','95673867','Libreville','Gabon'],
+  ['MYC','95673868','Malabo','Equatorial Guinea'],
+  ['DLA','95673869','Douala','Cameroon'],
+  ['YAO','95673869','Yaoundé','Cameroon'],
+  ['BGF','95673870','Bangui','Central African Republic'],
+  ['SSG','95673871','Malabo','Equatorial Guinea'],
+  ['EYL','95673872','Yelimane','Mali'],
+  ['ALG','95673873','Algiers Houari Boumediene','Algeria'],
+  ['ORN','95673873','Oran','Algeria'],
+  ['TUN','95673874','Tunis Carthage','Tunisia'],
+  ['MIR','95673874','Monastir','Tunisia'],
+  ['TBR','95673874','Sfax','Tunisia'],
+  ['TIP','95673875','Tripoli Mitiga','Libya'],
+  ['KRT','95673876','Khartoum','Sudan'],
+  ['MGQ','95673877','Mogadishu Aden Adde','Somalia'],
+  ['HGA','95673878','Hargeisa','Somalia'],
+  ['ASM','95673879','Asmara','Eritrea'],
+  ['JIB','95673880','Djibouti Ambouli','Djibouti'],
+  // Asia - China
+  ['PEK','27544932','Beijing Capital','China'],
+  ['PKX','27544932','Beijing Daxing','China'],
+  ['PVG','27544932','Shanghai Pudong','China'],
+  ['SHA','27544932','Shanghai Hongqiao','China'],
+  ['CAN','27544932','Guangzhou Baiyun','China'],
+  ['SZX','27544932','Shenzhen Bao\'an','China'],
+  ['CTU','27544932','Chengdu Tianfu','China'],
+  ['TFU','27544932','Chengdu Shuangliu','China'],
+  ['KMG','27544932','Kunming Changshui','China'],
+  ['WUH','27544932','Wuhan Tianhe','China'],
+  ['XIY','27544932','Xi\'an Xianyang','China'],
+  ['CSX','27544932','Changsha Huanghua','China'],
+  ['CKG','27544932','Chongqing Jiangbei','China'],
+  ['NKG','27544932','Nanjing Lukou','China'],
+  ['HGH','27544932','Hangzhou Xiaoshan','China'],
+  ['XMN','27544932','Xiamen Gaoqi','China'],
+  ['HAK','27544932','Haikou Meilan','China'],
+  ['SYX','27544932','Sanya Phoenix','China'],
+  ['URC','27544932','Urumqi Diwopu','China'],
+  ['TSN','27544932','Tianjin Binhai','China'],
+  ['TAO','27544932','Qingdao Jiaodong','China'],
+  ['CGO','27544932','Zhengzhou Xinzheng','China'],
+  ['HET','27544932','Hohhot Baita','China'],
+  ['LHW','27544932','Lanzhou Zhongchuan','China'],
+  ['INC','27544932','Yinchuan Hedong','China'],
+  ['XNN','27544932','Xining Caojiapu','China'],
+  ['HRB','27544932','Harbin Taiping','China'],
+  ['CGQ','27544932','Changchun Longjia','China'],
+  ['SHE','27544932','Shenyang Taoxian','China'],
+  ['DLC','27544932','Dalian Zhoushuizi','China'],
+  ['HKG','27544932','Hong Kong','China SAR'],
+  ['MFM','27544932','Macau','China SAR'],
+  // Asia - Rest
+  ['NRT','27544932','Tokyo Narita','Japan'],
+  ['HND','27544932','Tokyo Haneda','Japan'],
+  ['KIX','27544932','Osaka Kansai','Japan'],
+  ['ITM','27544932','Osaka Itami','Japan'],
+  ['NGO','27544932','Nagoya Chubu','Japan'],
+  ['CTS','27544932','Sapporo New Chitose','Japan'],
+  ['FUK','27544932','Fukuoka','Japan'],
+  ['OKA','27544932','Okinawa Naha','Japan'],
+  ['ICN','27544932','Seoul Incheon','South Korea'],
+  ['GMP','27544932','Seoul Gimpo','South Korea'],
+  ['PUS','27544932','Busan Gimhae','South Korea'],
+  ['CJU','27544932','Jeju','South Korea'],
+  ['TPE','27544932','Taipei Taoyuan','Taiwan'],
+  ['TSA','27544932','Taipei Songshan','Taiwan'],
+  ['KHH','27544932','Kaohsiung','Taiwan'],
+  ['BKK','27544932','Bangkok Suvarnabhumi','Thailand'],
+  ['DMK','27544932','Bangkok Don Mueang','Thailand'],
+  ['HKT','27544932','Phuket','Thailand'],
+  ['CNX','27544932','Chiang Mai','Thailand'],
+  ['USM','27544932','Koh Samui','Thailand'],
+  ['KBV','27544932','Krabi','Thailand'],
+  ['SIN','27544932','Singapore Changi','Singapore'],
+  ['KUL','27544932','Kuala Lumpur','Malaysia'],
+  ['PEN','27544932','Penang','Malaysia'],
+  ['LGK','27544932','Langkawi','Malaysia'],
+  ['BKI','27544932','Kota Kinabalu','Malaysia'],
+  ['JHB','27544932','Johor Bahru','Malaysia'],
+  ['CGK','27544932','Jakarta Soekarno-Hatta','Indonesia'],
+  ['DPS','27544932','Bali Ngurah Rai','Indonesia'],
+  ['SUB','27544932','Surabaya Juanda','Indonesia'],
+  ['MDC','27544932','Manado Sam Ratulangi','Indonesia'],
+  ['MNL','27544932','Manila Ninoy Aquino','Philippines'],
+  ['CEB','27544932','Cebu Mactan','Philippines'],
+  ['DVO','27544932','Davao Francisco Bangoy','Philippines'],
+  ['SGN','27544932','Ho Chi Minh City Tan Son Nhat','Vietnam'],
+  ['HAN','27544932','Hanoi Noi Bai','Vietnam'],
+  ['DAD','27544932','Da Nang','Vietnam'],
+  ['PNH','27544932','Phnom Penh','Cambodia'],
+  ['REP','27544932','Siem Reap','Cambodia'],
+  ['VTE','27544932','Vientiane Wattay','Laos'],
+  ['LPQ','27544932','Luang Prabang','Laos'],
+  ['RGN','27544932','Yangon','Myanmar'],
+  ['MDL','27544932','Mandalay','Myanmar'],
+  ['DEL','27544932','New Delhi Indira Gandhi','India'],
+  ['BOM','27544932','Mumbai Chhatrapati Shivaji','India'],
+  ['BLR','27544932','Bangalore Kempegowda','India'],
+  ['MAA','27544932','Chennai','India'],
+  ['CCU','27544932','Kolkata Netaji Subhas','India'],
+  ['HYD','27544932','Hyderabad Rajiv Gandhi','India'],
+  ['AMD','27544932','Ahmedabad Sardar Vallabhbhai','India'],
+  ['PNQ','27544932','Pune','India'],
+  ['GOI','27544932','Goa Dabolim','India'],
+  ['COK','27544932','Kochi','India'],
+  ['TRV','27544932','Thiruvananthapuram','India'],
+  ['CMB','27544932','Colombo Bandaranaike','Sri Lanka'],
+  ['KTM','27544932','Kathmandu Tribhuvan','Nepal'],
+  ['DAC','27544932','Dhaka Hazrat Shahjalal','Bangladesh'],
+  ['CGP','27544932','Chittagong Shah Amanat','Bangladesh'],
+  ['KHI','27544932','Karachi Jinnah','Pakistan'],
+  ['LHE','27544932','Lahore Allama Iqbal','Pakistan'],
+  ['ISB','27544932','Islamabad Benazir Bhutto','Pakistan'],
+  ['KBL','27544932','Kabul','Afghanistan'],
+  ['TAS','27544932','Tashkent','Uzbekistan'],
+  ['ALA','27544932','Almaty','Kazakhstan'],
+  ['NQZ','27544932','Nur-Sultan Astana','Kazakhstan'],
+  ['TBS','27544932','Tbilisi','Georgia'],
+  ['EVN','27544932','Yerevan Zvartnots','Armenia'],
+  ['GYD','27544932','Baku Heydar Aliyev','Azerbaijan'],
+  // Oceania
+  ['SYD','27544813','Sydney Kingsford Smith','Australia'],
+  ['MEL','27544813','Melbourne Tullamarine','Australia'],
+  ['BNE','27544813','Brisbane','Australia'],
+  ['PER','27544813','Perth','Australia'],
+  ['ADL','27544813','Adelaide','Australia'],
+  ['OOL','27544813','Gold Coast','Australia'],
+  ['DRW','27544813','Darwin','Australia'],
+  ['CNS','27544813','Cairns','Australia'],
+  ['AKL','27544813','Auckland','New Zealand'],
+  ['CHC','27544813','Christchurch','New Zealand'],
+  ['WLG','27544813','Wellington','New Zealand'],
+  ['NAN','27544813','Nadi','Fiji'],
+  ['PPT','27544813','Papeete Tahiti','French Polynesia'],
+  ['APW','27544813','Apia','Samoa'],
+  ['SUV','27544813','Suva Nausori','Fiji'],
   // Americas
-  {skyId:'GRU',entityId:'27539733',name:'São Paulo Guarulhos',sub:'Brazil'},
-  {skyId:'GIG',entityId:'27539733',name:'Rio de Janeiro',sub:'Brazil'},
-  {skyId:'BOG',entityId:'27539733',name:'Bogotá',sub:'Colombia'},
-  {skyId:'LIM',entityId:'27539733',name:'Lima',sub:'Peru'},
-  {skyId:'MEX',entityId:'27539733',name:'Mexico City',sub:'Mexico'},
-  {skyId:'YYZ',entityId:'27539733',name:'Toronto Pearson',sub:'Canada'},
-  {skyId:'YVR',entityId:'27539733',name:'Vancouver',sub:'Canada'},
-  {skyId:'YUL',entityId:'27539733',name:'Montreal',sub:'Canada'},
+  ['YYZ','27539733','Toronto Pearson','Canada'],
+  ['YUL','27539733','Montreal Trudeau','Canada'],
+  ['YVR','27539733','Vancouver','Canada'],
+  ['YYC','27539733','Calgary','Canada'],
+  ['YEG','27539733','Edmonton','Canada'],
+  ['YOW','27539733','Ottawa Macdonald-Cartier','Canada'],
+  ['YHZ','27539733','Halifax','Canada'],
+  ['YWG','27539733','Winnipeg','Canada'],
+  ['MEX','27539733','Mexico City Benito Juárez','Mexico'],
+  ['CUN','27539733','Cancún','Mexico'],
+  ['GDL','27539733','Guadalajara','Mexico'],
+  ['MTY','27539733','Monterrey','Mexico'],
+  ['SJD','27539733','Los Cabos','Mexico'],
+  ['PVR','27539733','Puerto Vallarta','Mexico'],
+  ['MZT','27539733','Mazatlán','Mexico'],
+  ['HMO','27539733','Hermosillo','Mexico'],
+  ['OAX','27539733','Oaxaca','Mexico'],
+  ['GRU','27539733','São Paulo Guarulhos','Brazil'],
+  ['GIG','27539733','Rio de Janeiro Galeão','Brazil'],
+  ['BSB','27539733','Brasilia','Brazil'],
+  ['SSA','27539733','Salvador','Brazil'],
+  ['REC','27539733','Recife','Brazil'],
+  ['FOR','27539733','Fortaleza','Brazil'],
+  ['BEL','27539733','Belém','Brazil'],
+  ['MAO','27539733','Manaus','Brazil'],
+  ['POA','27539733','Porto Alegre','Brazil'],
+  ['CWB','27539733','Curitiba','Brazil'],
+  ['BOG','27539733','Bogotá El Dorado','Colombia'],
+  ['MDE','27539733','Medellín José María Córdova','Colombia'],
+  ['CTG','27539733','Cartagena','Colombia'],
+  ['LIM','27539733','Lima Jorge Chávez','Peru'],
+  ['CUZ','27539733','Cusco Alejandro Velasco','Peru'],
+  ['SCL','27539733','Santiago Arturo Merino','Chile'],
+  ['EZE','27539733','Buenos Aires Ezeiza','Argentina'],
+  ['AEP','27539733','Buenos Aires Aeroparque','Argentina'],
+  ['COR','27539733','Córdoba','Argentina'],
+  ['MDZ','27539733','Mendoza','Argentina'],
+  ['MVD','27539733','Montevideo Carrasco','Uruguay'],
+  ['ASU','27539733','Asunción Silvio Pettirossi','Paraguay'],
+  ['VVI','27539733','Santa Cruz Viru Viru','Bolivia'],
+  ['LPB','27539733','La Paz El Alto','Bolivia'],
+  ['UIO','27539733','Quito Mariscal Sucre','Ecuador'],
+  ['GYE','27539733','Guayaquil José J. de Olmedo','Ecuador'],
+  ['CCS','27539733','Caracas Simón Bolívar','Venezuela'],
+  ['PTY','27539733','Panama City Tocumen','Panama'],
+  ['SJO','27539733','San José Juan Santamaría','Costa Rica'],
+  ['MGA','27539733','Managua Augusto C. Sandino','Nicaragua'],
+  ['TGU','27539733','Tegucigalpa','Honduras'],
+  ['SAP','27539733','San Pedro Sula','Honduras'],
+  ['SAL','27539733','San Salvador','El Salvador'],
+  ['GUA','27539733','Guatemala City La Aurora','Guatemala'],
+  ['BZE','27539733','Belize City Philip Goldson','Belize'],
+  ['HAV','27539733','Havana José Martí','Cuba'],
+  ['MBJ','27539733','Montego Bay Sangster','Jamaica'],
+  ['KIN','27539733','Kingston Norman Manley','Jamaica'],
+  ['NAS','27539733','Nassau Lynden Pindling','Bahamas'],
+  ['POS','27539733','Port of Spain Piarco','Trinidad & Tobago'],
+  ['BGI','27539733','Bridgetown Grantley Adams','Barbados'],
+  ['SXM','27539733','Sint Maarten Princess Juliana','Sint Maarten'],
+  ['ANU','27539733','Antigua V.C. Bird','Antigua & Barbuda'],
+  ['SKB','27539733','St. Kitts Robert L. Bradshaw','St. Kitts'],
+  ['SJU','27539733','San Juan Luis Muñoz Marín','Puerto Rico'],
+  ['STT','27539733','St. Thomas Cyril E. King','US Virgin Islands'],
+  ['PTP','27539733','Pointe-à-Pitre Guadeloupe','Guadeloupe'],
+  ['FDF','27539733','Fort-de-France Martinique','Martinique'],
+  ['PAP','27539733','Port-au-Prince Toussaint','Haiti'],
+  ['SDQ','27539733','Santo Domingo Las Américas','Dominican Republic'],
+  ['PUJ','27539733','Punta Cana','Dominican Republic'],
 ];
 
-let sel = {from:null, to:null};
-let dbt = {};
+const AIRPORTS = DB.map(([skyId,entityId,name,country])=>({skyId,entityId,name,country}));
 
-const d = new Date();
-document.getElementById('dep').value = d.toISOString().split('T')[0];
-document.getElementById('dep').min = d.toISOString().split('T')[0];
+// ── State ─────────────────────────────────────────────────────────────────────
+let sel={from:null,to:null};
+let dbt={};
+let searchTimeout={};
 
-function switchTab(name, btn) {
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('page-'+name).classList.add('active');
+// Set today
+const d=new Date();
+document.getElementById('dep').value=d.toISOString().split('T')[0];
+document.getElementById('dep').min=d.toISOString().split('T')[0];
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function switchTab(name,btn){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('pg-'+name).classList.add('on');
   if(name==='alerts') loadAlerts();
 }
 
-function toast(msg, dur=3000) {
+function toast(msg,dur=3000){
   const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), dur);
+  t.textContent=msg; t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),dur);
 }
 
-function onInput(side, val) {
+// ── Airport search ────────────────────────────────────────────────────────────
+function onType(side,val){
   clearTimeout(dbt[side]);
+  clearTimeout(searchTimeout[side]);
   sel[side]=null;
-  const q = val.trim().toLowerCase();
-  if(q.length < 1) { hide(side); return; }
+  const q=val.trim().toLowerCase();
+  if(q.length<1){hideDrop(side);return;}
 
   // Instantly show local matches
-  const local = POPULAR.filter(a =>
-    a.skyId.toLowerCase().startsWith(q) ||
-    a.name.toLowerCase().includes(q) ||
-    a.sub.toLowerCase().includes(q)
-  );
-  if(local.length) showDrop(side, local);
+  const local=AIRPORTS.filter(a=>
+    a.skyId.toLowerCase().startsWith(q)||
+    a.name.toLowerCase().includes(q)||
+    a.country.toLowerCase().includes(q)
+  ).slice(0,6);
 
-  // Also fetch from API after short delay
-  dbt[side] = setTimeout(() => fetchAirports(side, val), 400);
-}
-
-async function fetchAirports(side, q) {
-  try {
-    const r = await fetch(`/api/search-airport?q=${encodeURIComponent(q)}`);
-    const json = await r.json();
-    const data = json.data || [];
-    if(data.length) {
-      showDrop(side, data.map(i=>({
-        skyId: i.skyId||'',
-        entityId: i.entityId||'',
-        name: i.presentation?.title || i.name || i.skyId || '',
-        sub: i.presentation?.subtitle || i.countryName || ''
-      })));
-    } else {
-      // If API returns empty, keep showing local matches
-      const q2 = document.getElementById(side+'-in').value.trim().toLowerCase();
-      const local = POPULAR.filter(a =>
-        a.skyId.toLowerCase().startsWith(q2) ||
-        a.name.toLowerCase().includes(q2) ||
-        a.sub.toLowerCase().includes(q2)
-      );
-      if(local.length) showDrop(side, local);
-      else showDrop(side, [{skyId:'?', entityId:'', name:'No results found for "'+q+'"', sub:'Try IATA code e.g. ACC, LHR'}]);
-    }
-  } catch(e) {
-    console.error('Airport search error:', e);
-    // Show error in dropdown so user knows what happened
-    document.getElementById(side+'-drop').innerHTML = `<div class="drop-item" style="color:var(--danger)">⚠ Search error — try typing the IATA code (e.g. ACC)</div>`;
-    document.getElementById(side+'-drop').style.display='block';
+  if(local.length){
+    showDrop(side,local);
+  } else {
+    // Show loading while we fetch
+    showLoading(side);
   }
+
+  // Always also hit the API for best results
+  searchTimeout[side]=setTimeout(()=>fetchAirports(side,val),400);
 }
 
-function showDrop(side, items) {
-  const box = document.getElementById(side+'-drop');
-  if(!items.length){box.style.display='none';return;}
-  box.innerHTML = items.slice(0,6).map(a=>`
-    <div class="drop-item" onclick="pick('${side}','${a.skyId}','${a.entityId||''}','${(a.name+(a.sub?', '+a.sub:'')).replace(/'/g,"\\'")}')">
-      <span class="iata">${a.skyId}</span>
-      <div><div class="aname">${a.name}</div><div class="asub">${a.sub||''}</div></div>
-    </div>`).join('');
+function showLoading(side){
+  const box=document.getElementById('dp-'+side);
+  box.innerHTML=`<div class="di loading-row"><div class="spin"></div> Searching…</div>`;
   box.style.display='block';
 }
 
-function pick(side, skyId, entityId, label) {
-  sel[side]={skyId, entityId, label};
-  document.getElementById(side+'-in').value=label;
-  hide(side);
-  toast(`✓ ${label}`);
+async function fetchAirports(side,q){
+  try{
+    const r=await fetch('/api/search-airport?q='+encodeURIComponent(q));
+    const json=await r.json();
+    const data=(json.data||[]).map(i=>({
+      skyId:i.skyId||'',
+      entityId:i.entityId||'',
+      name:i.presentation?.title||i.name||i.skyId||'',
+      country:i.presentation?.subtitle||i.countryName||''
+    })).filter(a=>a.skyId);
+
+    if(data.length){
+      showDrop(side,data);
+    } else {
+      // Fall back to local
+      const q2=document.getElementById('in-'+side).value.trim().toLowerCase();
+      const local=AIRPORTS.filter(a=>
+        a.skyId.toLowerCase().startsWith(q2)||
+        a.name.toLowerCase().includes(q2)||
+        a.country.toLowerCase().includes(q2)
+      ).slice(0,6);
+      if(local.length) showDrop(side,local);
+      else showDrop(side,[{skyId:'',entityId:'',name:'No results — try the IATA code (e.g. ACC, LHR)',country:''}],true);
+    }
+  }catch(e){
+    const q2=document.getElementById('in-'+side).value.trim().toLowerCase();
+    const local=AIRPORTS.filter(a=>
+      a.skyId.toLowerCase().startsWith(q2)||
+      a.name.toLowerCase().includes(q2)||
+      a.country.toLowerCase().includes(q2)
+    ).slice(0,6);
+    if(local.length) showDrop(side,local);
+    else{
+      const box=document.getElementById('dp-'+side);
+      box.innerHTML=`<div class="di msg">⚠ Search unavailable — try IATA code e.g. ACC</div>`;
+      box.style.display='block';
+    }
+  }
 }
 
-function hide(side){document.getElementById(side+'-drop').style.display='none';}
-document.addEventListener('click', e=>{
-  if(!e.target.closest('#from-row')) hide('from');
-  if(!e.target.closest('#to-row')) hide('to');
+function showDrop(side,items,noSelect){
+  const box=document.getElementById('dp-'+side);
+  box.innerHTML=items.map(a=>
+    noSelect||!a.skyId
+      ? `<div class="di msg">${a.name}</div>`
+      : `<div class="di" onclick="pick('${side}','${a.skyId}','${a.entityId}','${(a.name+', '+a.country).replace(/'/g,"\\'")}')">
+           <span class="code">${a.skyId}</span>
+           <div><div class="nm">${a.name}</div><div class="ct">${a.country}</div></div>
+         </div>`
+  ).join('');
+  box.style.display='block';
+}
+
+function pick(side,skyId,entityId,label){
+  sel[side]={skyId,entityId,label};
+  document.getElementById('in-'+side).value=label;
+  hideDrop(side);
+  toast('✓ '+label.split(',')[0]);
+}
+
+function hideDrop(side){document.getElementById('dp-'+side).style.display='none';}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#row-from')) hideDrop('from');
+  if(!e.target.closest('#row-to')) hideDrop('to');
 });
 
-async function doSearch() {
-  const from=sel.from, to=sel.to, date=document.getElementById('dep').value;
-  if(!from||!to||!date){toast('⚠️ Select origin & destination from the list');return;}
+// ── Flight search ─────────────────────────────────────────────────────────────
+async function doSearch(){
+  const from=sel.from,to=sel.to,date=document.getElementById('dep').value;
+  if(!from||!to||!date){toast('⚠ Select origin & destination from the list');return;}
   const btn=document.getElementById('sbtn');
   btn.disabled=true; btn.textContent='Searching…';
-  document.getElementById('results').innerHTML=`<div class="loading"><div class="spinner"></div> Fetching live prices…</div>`;
-  try {
-    const params=new URLSearchParams({
-      originSkyId:from.skyId, destinationSkyId:to.skyId,
-      originEntityId:from.entityId, destinationEntityId:to.entityId,
-      date, adults:document.getElementById('pax').value,
+  document.getElementById('res').innerHTML=`<div class="ld"><div class="spin"></div> Fetching live prices (5–10s)…</div>`;
+  try{
+    const p=new URLSearchParams({
+      originSkyId:from.skyId,destinationSkyId:to.skyId,
+      originEntityId:from.entityId,destinationEntityId:to.entityId,
+      date,adults:document.getElementById('pax').value,
       cabinClass:document.getElementById('cabin').value,
     });
     const ret=document.getElementById('ret').value;
-    if(ret) params.set('returnDate',ret);
-    const r=await fetch(`/api/search-flights?${params}`);
+    if(ret) p.set('returnDate',ret);
+    const r=await fetch('/api/search-flights?'+p);
     const json=await r.json();
-    renderResults(json, from, to);
-  } catch(e) {
-    document.getElementById('results').innerHTML=`<div class="err">Error: ${e.message}</div>`;
-  } finally {
+    renderResults(json,from,to);
+  }catch(e){
+    document.getElementById('res').innerHTML=`<div class="err">Error: ${e.message}</div>`;
+  }finally{
     btn.disabled=false; btn.textContent='Search Flights';
   }
 }
 
-function renderResults(json, from, to) {
+function renderResults(json,from,to){
   const its=json?.data?.itineraries||[];
   if(!its.length){
-    document.getElementById('results').innerHTML=`<div class="empty"><span class="empty-icon">🔍</span><p>No flights found. Try different dates.</p></div>`;
+    document.getElementById('res').innerHTML=`<div class="empty"><i>🔍</i><p>No flights found. Try different dates.</p></div>`;
     return;
   }
   const prices=its.map(i=>i.price?.raw||0).filter(p=>p>0);
-  const min=Math.min(...prices), avg=Math.round(prices.reduce((a,b)=>a+b,0)/prices.length);
-  let html=`<div style="font-size:13px;color:var(--subtext);padding:8px 0;display:flex;justify-content:space-between;"><span><span class="live-dot"></span>Live Skyscanner prices</span><span>${its.length} flights</span></div>
-  <div class="stat-row">
-    <div class="stat"><div class="stat-val" style="color:var(--success)">$${Math.round(min)}</div><div class="stat-lbl">Lowest</div></div>
-    <div class="stat"><div class="stat-val">$${avg}</div><div class="stat-lbl">Average</div></div>
+  const min=Math.min(...prices),avg=Math.round(prices.reduce((a,b)=>a+b,0)/prices.length);
+  let html=`<div style="font-size:13px;color:var(--sub);padding:8px 0;display:flex;justify-content:space-between;">
+    <span><span class="ldot"></span>Live Skyscanner prices</span><span>${its.length} flights</span></div>
+  <div class="sr">
+    <div class="sc"><div class="sv" style="color:var(--ok)">$${Math.round(min)}</div><div class="sl">Lowest</div></div>
+    <div class="sc"><div class="sv">$${avg}</div><div class="sl">Average</div></div>
   </div>`;
   its.slice(0,8).forEach((it,idx)=>{
     const price=Math.round(it.price?.raw||0);
-    const fmt=it.price?.formatted||`$${price}`;
+    const fmt=it.price?.formatted||'$'+price;
     const leg=it.legs?.[0]||{};
     const carrier=(leg.carriers?.marketing||[])[0]||{};
     const dep=leg.departure?new Date(leg.departure).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}):'--';
     const arr=leg.arrival?new Date(leg.arrival).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}):'--';
-    const dur=leg.durationInMinutes?`${Math.floor(leg.durationInMinutes/60)}h ${leg.durationInMinutes%60}m`:'--';
+    const dur=leg.durationInMinutes?Math.floor(leg.durationInMinutes/60)+'h '+leg.durationInMinutes%60+'m':'--';
     const stops=leg.stopCount||0;
     const isMin=price===min;
-    html+=`<div class="flight-card">
-      <div class="f-top">
+    html+=`<div class="fc">
+      <div class="ft">
         <div>
-          <div class="f-airline">${carrier.name||'Unknown airline'}</div>
-          <div class="f-times">${dep} → ${arr}</div>
-          <div class="f-detail">${dur} · ${stops===0?'Nonstop':stops+' stop'+(stops>1?'s':'')}</div>
+          <div class="fa">${carrier.name||'Unknown airline'}</div>
+          <div class="fr">${dep} → ${arr}</div>
+          <div class="fd">${dur} · ${stops===0?'Nonstop':stops+' stop'+(stops>1?'s':'')}</div>
         </div>
-        <div class="f-price"><div class="price-num">${fmt}</div><div class="price-lbl">per person</div></div>
+        <div class="fp"><div class="pn">${fmt}</div><div class="pl">per person</div></div>
       </div>
-      <div class="f-footer">
-        <div>${isMin?'<span class="tag tag-green">✓ Lowest</span>':''}</div>
-        <button class="alert-btn" onclick="setAlert(${idx},'${(carrier.name||'').replace(/'/g,"\\'")}',${price},'${from.skyId}','${to.skyId}','${from.entityId}','${to.entityId}','${from.label.replace(/'/g,"\\'")}','${to.label.replace(/'/g,"\\'")}')">+ Alert</button>
+      <div class="ff">
+        <div>${isMin?'<span class="tag tg">✓ Lowest</span>':''}</div>
+        <button class="abtn" onclick="setAlert(${idx},'${(carrier.name||'').replace(/'/g,"\\'")}',${price},'${from.skyId}','${to.skyId}','${from.entityId}','${to.entityId}','${from.label.replace(/'/g,"\\'")}','${to.label.replace(/'/g,"\\'")}')">+ Alert</button>
       </div>
     </div>`;
   });
-  document.getElementById('results').innerHTML=html;
+  document.getElementById('res').innerHTML=html;
   window._its=its;
 }
 
-function setAlert(idx,airline,price,oSky,dSky,oEnt,dEnt,fl,tl) {
-  const target=prompt(`Alert for ${fl.split(',')[0]} → ${tl.split(',')[0]}\nCurrent: $${price}\nAlert me when price drops below:`, Math.round(price*0.9));
+// ── Alerts ────────────────────────────────────────────────────────────────────
+function setAlert(idx,airline,price,oSky,dSky,oEnt,dEnt,fl,tl){
+  const target=prompt('Alert for '+fl.split(',')[0]+' → '+tl.split(',')[0]+'\nCurrent: $'+price+'\nAlert me when price drops below:',Math.round(price*0.9));
   if(!target) return;
-  const date=document.getElementById('dep').value;
-  const ret=document.getElementById('ret').value;
   fetch('/api/alerts',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
-      route:`${fl.split(',')[0]} → ${tl.split(',')[0]}`,
+      route:fl.split(',')[0]+' → '+tl.split(',')[0],
       originSkyId:oSky,destinationSkyId:dSky,
       originEntityId:oEnt,destinationEntityId:dEnt,
-      departDate:date,returnDate:ret||undefined,
+      departDate:document.getElementById('dep').value,
+      returnDate:document.getElementById('ret').value||undefined,
       targetPrice:parseFloat(target),
       adults:document.getElementById('pax').value,
       cabinClass:document.getElementById('cabin').value,
@@ -378,38 +764,38 @@ function setAlert(idx,airline,price,oSky,dSky,oEnt,dEnt,fl,tl) {
   }).catch(()=>toast('Failed to save alert'));
 }
 
-async function loadAlerts() {
+async function loadAlerts(){
   const list=document.getElementById('alist');
-  list.innerHTML=`<div class="loading"><div class="spinner"></div></div>`;
-  try {
+  list.innerHTML=`<div class="ld"><div class="spin"></div></div>`;
+  try{
     const alerts=await fetch('/api/alerts').then(r=>r.json());
     if(!alerts.length){
-      list.innerHTML=`<div class="empty"><span class="empty-icon">🔔</span><p>No alerts yet. Search a flight and tap + Alert</p></div>`;
+      list.innerHTML=`<div class="empty"><i>🔔</i><p>No alerts yet. Search a flight and tap + Alert</p></div>`;
       return;
     }
     list.innerHTML=alerts.map(a=>`
-      <div class="alert-card">
-        <div class="a-info">
-          <div class="a-route">${a.route}</div>
-          <div class="a-meta">${a.departDate} · ${a.cabinClass||'economy'} · ${a.adults||1} pax</div>
-          <div class="a-prices">
-            <div class="a-p">Current<span class="${a.currentPrice&&a.currentPrice<=a.targetPrice?'green':''}">${a.currentPrice?'$'+Math.round(a.currentPrice):'--'}</span></div>
-            <div class="a-p">Target<span class="green">$${Math.round(a.targetPrice)}</span></div>
-            <div class="a-p">Alerts<span>${a.triggeredCount||0} sent</span></div>
+      <div class="ac">
+        <div class="ai">
+          <div class="ar">${a.route}</div>
+          <div class="am">${a.departDate} · ${a.cabinClass||'economy'} · ${a.adults||1} pax</div>
+          <div class="ap">
+            <div>Current<span class="${a.currentPrice&&a.currentPrice<=a.targetPrice?'g':''}">${a.currentPrice?'$'+Math.round(a.currentPrice):'--'}</span></div>
+            <div>Target<span class="g">$${Math.round(a.targetPrice)}</span></div>
+            <div>Alerts<span>${a.triggeredCount||0}</span></div>
           </div>
-          ${a.lastChecked?`<div style="font-size:11px;color:var(--subtext);margin-top:4px;">Checked: ${new Date(a.lastChecked).toLocaleString()}</div>`:''}
+          ${a.lastChecked?`<div style="font-size:11px;color:var(--sub);margin-top:4px;">Checked: ${new Date(a.lastChecked).toLocaleString()}</div>`:''}
         </div>
-        <button class="del-btn" onclick="delAlert('${a.id}')">✕</button>
+        <button class="xb" onclick="delAlert('${a.id}')">✕</button>
       </div>`).join('');
-    document.getElementById('abadge').textContent=alerts.length;
-    document.getElementById('abadge').style.display=alerts.length?'':'none';
-  } catch(e){
-    list.innerHTML=`<div class="err">Error loading alerts: ${e.message}</div>`;
+    document.getElementById('bdg').textContent=alerts.length;
+    document.getElementById('bdg').style.display=alerts.length?'':'none';
+  }catch(e){
+    list.innerHTML=`<div class="err">Error: ${e.message}</div>`;
   }
 }
 
-function loadBadge(){fetch('/api/alerts').then(r=>r.json()).then(a=>{document.getElementById('abadge').textContent=a.length;document.getElementById('abadge').style.display=a.length?'':'none';});}
-async function delAlert(id){if(!confirm('Remove alert?'))return;await fetch(`/api/alerts/${id}`,{method:'DELETE'});toast('Removed');loadAlerts();}
+function loadBadge(){fetch('/api/alerts').then(r=>r.json()).then(a=>{document.getElementById('bdg').textContent=a.length;document.getElementById('bdg').style.display=a.length?'':'none';});}
+async function delAlert(id){if(!confirm('Remove alert?'))return;await fetch('/api/alerts/'+id,{method:'DELETE'});toast('Removed');loadAlerts();}
 loadBadge();
 </script>
 </body>
