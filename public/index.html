@@ -9,126 +9,102 @@
 <title>✈️ Flight Tracker</title>
 <style>
   :root {
-    --bg: #f2f2f7; --card: #ffffff; --text: #000; --subtext: #6c6c70;
-    --border: rgba(0,0,0,0.1); --accent: #007aff; --success: #34c759;
-    --danger: #ff3b30; --warn: #ff9500; --radius: 12px;
-    --safe-top: env(safe-area-inset-top); --safe-bot: env(safe-area-inset-bottom);
+    --bg:#f2f2f7;--card:#fff;--text:#000;--subtext:#6c6c70;
+    --border:rgba(0,0,0,0.1);--accent:#007aff;--success:#34c759;
+    --danger:#ff3b30;--warn:#ff9500;--radius:12px;
   }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg:#1c1c1e; --card:#2c2c2e; --text:#fff; --subtext:#98989f; --border:rgba(255,255,255,0.1); }
+  @media(prefers-color-scheme:dark){
+    :root{--bg:#1c1c1e;--card:#2c2c2e;--text:#fff;--subtext:#98989f;--border:rgba(255,255,255,0.1);}
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; background: var(--bg); color: var(--text); min-height: 100dvh; }
-  .safe-top { height: calc(var(--safe-top) + 0px); }
-  header { background: var(--card); border-bottom: 0.5px solid var(--border); padding: 12px 16px 12px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-  header h1 { font-size: 17px; font-weight: 600; text-align: center; }
-  .tabs { display: flex; background: var(--bg); padding: 8px 16px; gap: 8px; position: sticky; top: 49px; z-index: 99; }
-  .tab-btn { flex: 1; padding: 7px; border-radius: 8px; border: none; font-size: 13px; font-weight: 500; cursor: pointer; background: transparent; color: var(--subtext); }
-  .tab-btn.active { background: var(--card); color: var(--accent); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
-  .page { display: none; padding: 0 16px 100px; }
-  .page.active { display: block; }
-  .section { background: var(--card); border-radius: var(--radius); margin: 12px 0; overflow: hidden; }
-  .section-header { font-size: 13px; font-weight: 600; color: var(--subtext); text-transform: uppercase; letter-spacing: 0.04em; padding: 12px 16px 4px; }
-  .row { display: flex; align-items: center; padding: 12px 16px; border-bottom: 0.5px solid var(--border); gap: 12px; }
-  .row:last-child { border-bottom: none; }
-  .row label { font-size: 15px; min-width: 80px; color: var(--text); }
-  .row input, .row select { flex: 1; border: none; background: transparent; font-size: 15px; color: var(--text); text-align: right; outline: none; font-family: inherit; }
-  .row input::placeholder { color: var(--subtext); }
-  .row select option { background: var(--card); color: var(--text); }
-  .autocomplete-wrap { flex: 1; position: relative; }
-  .autocomplete-wrap input { width: 100%; }
-  .dropdown { position: absolute; right: 0; top: calc(100% + 4px); background: var(--card); border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); z-index: 200; min-width: 260px; overflow: hidden; }
-  .dropdown-item { padding: 10px 14px; font-size: 14px; cursor: pointer; border-bottom: 0.5px solid var(--border); display: flex; gap: 8px; align-items: center; }
-  .dropdown-item:last-child { border-bottom: none; }
-  .dropdown-item:active { background: var(--bg); }
-  .iata { font-weight: 600; font-size: 14px; color: var(--accent); min-width: 36px; }
-  .airport-name { color: var(--subtext); font-size: 13px; }
-  .btn { width: 100%; padding: 14px; border-radius: var(--radius); border: none; font-size: 17px; font-weight: 600; cursor: pointer; margin: 4px 0; }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:active { opacity: 0.8; }
-  .btn-primary:disabled { opacity: 0.5; }
-  .btn-danger { background: var(--danger); color: #fff; font-size: 15px; padding: 10px; }
-  .flight-card { background: var(--card); border-radius: var(--radius); padding: 14px 16px; margin: 8px 0; }
-  .flight-top { display: flex; justify-content: space-between; align-items: flex-start; }
-  .flight-airline { font-size: 13px; color: var(--subtext); }
-  .flight-route { font-size: 17px; font-weight: 600; margin: 2px 0; }
-  .flight-detail { font-size: 13px; color: var(--subtext); }
-  .flight-price { text-align: right; }
-  .price-num { font-size: 24px; font-weight: 700; color: var(--success); }
-  .price-label { font-size: 12px; color: var(--subtext); }
-  .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; margin-right: 4px; margin-top: 6px; }
-  .tag-green { background: rgba(52,199,89,0.15); color: var(--success); }
-  .tag-blue { background: rgba(0,122,255,0.12); color: var(--accent); }
-  .tag-orange { background: rgba(255,149,0,0.15); color: var(--warn); }
-  .alert-card { background: var(--card); border-radius: var(--radius); padding: 14px 16px; margin: 8px 0; display: flex; gap: 12px; align-items: flex-start; }
-  .alert-info { flex: 1; }
-  .alert-route { font-size: 16px; font-weight: 600; }
-  .alert-meta { font-size: 13px; color: var(--subtext); margin-top: 2px; }
-  .alert-prices { display: flex; gap: 16px; margin-top: 8px; }
-  .alert-price-item { font-size: 12px; color: var(--subtext); }
-  .alert-price-item span { display: block; font-size: 16px; font-weight: 600; color: var(--text); }
-  .alert-price-item span.green { color: var(--success); }
-  .delete-btn { background: rgba(255,59,48,0.12); border: none; color: var(--danger); border-radius: 8px; width: 36px; height: 36px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .empty { text-align: center; padding: 48px 16px; color: var(--subtext); }
-  .empty-icon { font-size: 48px; display: block; margin-bottom: 12px; }
-  .empty h3 { font-size: 17px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
-  .loading { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 24px; color: var(--subtext); font-size: 15px; }
-  .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--success); margin-right: 5px; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.3} }
-  .results-meta { font-size: 13px; color: var(--subtext); padding: 8px 0 4px; display: flex; justify-content: space-between; align-items: center; }
-  .stat-row { display: flex; gap: 8px; margin: 8px 0; }
-  .stat { flex: 1; background: var(--card); border-radius: 10px; padding: 10px 12px; text-align: center; }
-  .stat-val { font-size: 20px; font-weight: 700; }
-  .stat-lbl { font-size: 11px; color: var(--subtext); margin-top: 2px; }
-  .toast { position: fixed; bottom: calc(80px + var(--safe-bot)); left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(0,0,0,0.8); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 999; white-space: nowrap; }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .bottom-safe { height: calc(var(--safe-bot) + 16px); }
-  .badge { display: inline-block; background: var(--danger); color: #fff; border-radius: 10px; font-size: 11px; font-weight: 700; padding: 1px 6px; margin-left: 4px; }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;}
+  header{background:var(--card);border-bottom:0.5px solid var(--border);padding:16px;position:sticky;top:0;z-index:100;}
+  header h1{font-size:17px;font-weight:600;text-align:center;}
+  .tabs{display:flex;background:var(--bg);padding:8px 16px;gap:8px;position:sticky;top:49px;z-index:99;}
+  .tab-btn{flex:1;padding:7px;border-radius:8px;border:none;font-size:13px;font-weight:500;cursor:pointer;background:transparent;color:var(--subtext);}
+  .tab-btn.active{background:var(--card);color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,0.12);}
+  .page{display:none;padding:0 16px 100px;}
+  .page.active{display:block;}
+  .section{background:var(--card);border-radius:var(--radius);margin:12px 0;overflow:visible;}
+  .row{display:flex;align-items:center;padding:12px 16px;border-bottom:0.5px solid var(--border);gap:12px;position:relative;}
+  .row:last-child{border-bottom:none;}
+  .row label{font-size:15px;min-width:76px;color:var(--text);flex-shrink:0;}
+  .row input,.row select{flex:1;border:none;background:transparent;font-size:15px;color:var(--text);text-align:right;outline:none;font-family:inherit;min-width:0;}
+  .row input::placeholder{color:var(--subtext);}
+  .dropdown{position:absolute;left:0;right:0;top:100%;background:var(--card);border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.25);z-index:999;overflow:hidden;border:0.5px solid var(--border);}
+  .drop-item{padding:12px 16px;font-size:14px;cursor:pointer;border-bottom:0.5px solid var(--border);display:flex;align-items:center;gap:10px;}
+  .drop-item:last-child{border-bottom:none;}
+  .drop-item:active{background:var(--bg);}
+  .iata{font-weight:700;font-size:15px;color:var(--accent);min-width:40px;}
+  .aname{color:var(--text);font-size:14px;}
+  .asub{color:var(--subtext);font-size:12px;}
+  .btn{width:100%;padding:14px;border-radius:var(--radius);border:none;font-size:17px;font-weight:600;cursor:pointer;margin:4px 0;}
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-primary:disabled{opacity:0.5;}
+  .flight-card{background:var(--card);border-radius:var(--radius);padding:14px 16px;margin:8px 0;}
+  .f-top{display:flex;justify-content:space-between;align-items:flex-start;}
+  .f-airline{font-size:13px;color:var(--subtext);}
+  .f-times{font-size:18px;font-weight:600;margin:2px 0;}
+  .f-detail{font-size:13px;color:var(--subtext);}
+  .f-price{text-align:right;}
+  .price-num{font-size:26px;font-weight:700;color:var(--success);}
+  .price-lbl{font-size:12px;color:var(--subtext);}
+  .tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;margin-right:4px;margin-top:6px;}
+  .tag-green{background:rgba(52,199,89,0.15);color:var(--success);}
+  .tag-blue{background:rgba(0,122,255,0.12);color:var(--accent);}
+  .alert-card{background:var(--card);border-radius:var(--radius);padding:14px 16px;margin:8px 0;display:flex;gap:12px;align-items:flex-start;}
+  .a-info{flex:1;}
+  .a-route{font-size:16px;font-weight:600;}
+  .a-meta{font-size:13px;color:var(--subtext);margin-top:2px;}
+  .a-prices{display:flex;gap:16px;margin-top:8px;}
+  .a-p{font-size:12px;color:var(--subtext);}
+  .a-p span{display:block;font-size:16px;font-weight:600;color:var(--text);}
+  .a-p span.green{color:var(--success);}
+  .del-btn{background:rgba(255,59,48,0.12);border:none;color:var(--danger);border-radius:8px;width:36px;height:36px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .empty{text-align:center;padding:48px 16px;color:var(--subtext);}
+  .empty-icon{font-size:48px;display:block;margin-bottom:12px;}
+  .loading{display:flex;align-items:center;justify-content:center;gap:8px;padding:24px;color:var(--subtext);font-size:15px;}
+  .spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--success);margin-right:5px;animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+  .stat-row{display:flex;gap:8px;margin:8px 0;}
+  .stat{flex:1;background:var(--card);border-radius:10px;padding:10px 12px;text-align:center;}
+  .stat-val{font-size:20px;font-weight:700;}
+  .stat-lbl{font-size:11px;color:var(--subtext);margin-top:2px;}
+  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(0,0,0,0.82);color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;opacity:0;transition:all 0.3s;z-index:9999;white-space:nowrap;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .badge{display:inline-block;background:var(--danger);color:#fff;border-radius:10px;font-size:11px;font-weight:700;padding:1px 6px;margin-left:4px;}
+  .err{background:rgba(255,59,48,0.1);color:var(--danger);padding:12px 16px;border-radius:10px;font-size:14px;margin:8px 0;}
+  .f-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);}
+  .alert-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;}
 </style>
 </head>
 <body>
-<div class="safe-top"></div>
 <header><h1>✈️ Flight Tracker</h1></header>
-
 <div class="tabs">
-  <button class="tab-btn active" onclick="switchTab('search', this)">Search</button>
-  <button class="tab-btn" onclick="switchTab('alerts', this)">Alerts <span class="badge" id="alert-badge" style="display:none">0</span></button>
-  <button class="tab-btn" onclick="switchTab('settings', this)">Settings</button>
+  <button class="tab-btn active" onclick="switchTab('search',this)">Search</button>
+  <button class="tab-btn" onclick="switchTab('alerts',this)">Alerts <span class="badge" id="abadge" style="display:none">0</span></button>
 </div>
 
-<!-- SEARCH TAB -->
 <div class="page active" id="page-search">
   <div class="section" style="margin-top:12px;">
-    <div class="row">
+    <div class="row" id="from-row">
       <label>From</label>
-      <div class="autocomplete-wrap">
-        <input id="from-input" placeholder="City or airport" autocomplete="off" oninput="handleInput('from',this.value)" />
-        <div class="dropdown" id="from-drop" style="display:none"></div>
-      </div>
+      <input id="from-in" placeholder="Type city or airport…" autocomplete="off" oninput="onInput('from',this.value)" onfocus="onInput('from',this.value)" />
+      <div class="dropdown" id="from-drop" style="display:none"></div>
     </div>
-    <div class="row">
+    <div class="row" id="to-row">
       <label>To</label>
-      <div class="autocomplete-wrap">
-        <input id="to-input" placeholder="City or airport" autocomplete="off" oninput="handleInput('to',this.value)" />
-        <div class="dropdown" id="to-drop" style="display:none"></div>
-      </div>
+      <input id="to-in" placeholder="Type city or airport…" autocomplete="off" oninput="onInput('to',this.value)" onfocus="onInput('to',this.value)" />
+      <div class="dropdown" id="to-drop" style="display:none"></div>
     </div>
-    <div class="row">
-      <label>Depart</label>
-      <input type="date" id="depart-date" />
+    <div class="row"><label>Depart</label><input type="date" id="dep" /></div>
+    <div class="row"><label>Return</label><input type="date" id="ret" /></div>
+    <div class="row"><label>Pax</label>
+      <select id="pax"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
     </div>
-    <div class="row">
-      <label>Return</label>
-      <input type="date" id="return-date" placeholder="Optional" />
-    </div>
-    <div class="row">
-      <label>Passengers</label>
-      <select id="adults"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
-    </div>
-    <div class="row">
-      <label>Cabin</label>
+    <div class="row"><label>Cabin</label>
       <select id="cabin">
         <option value="economy">Economy</option>
         <option value="premium_economy">Premium Economy</option>
@@ -137,279 +113,303 @@
       </select>
     </div>
   </div>
-
-  <button class="btn btn-primary" id="search-btn" onclick="doSearch()">Search Flights</button>
+  <button class="btn btn-primary" id="sbtn" onclick="doSearch()">Search Flights</button>
   <div id="results"></div>
 </div>
 
-<!-- ALERTS TAB -->
 <div class="page" id="page-alerts">
-  <div id="alerts-list" style="margin-top:12px;"></div>
+  <div id="alist" style="margin-top:12px;"></div>
   <button class="btn btn-primary" style="margin-top:8px;" onclick="loadAlerts()">↻ Refresh</button>
-</div>
-
-<!-- SETTINGS TAB -->
-<div class="page" id="page-settings">
-  <div class="section-header" style="padding-top:16px;">Notification Services</div>
-  <div class="section">
-    <div class="row"><label>Pushover Token</label><input id="s-push-token" placeholder="app token" /></div>
-    <div class="row"><label>Pushover User</label><input id="s-push-user" placeholder="user key" /></div>
-  </div>
-  <div class="section">
-    <div class="row"><label>Resend Key</label><input id="s-resend" placeholder="re_..." /></div>
-    <div class="row"><label>Your Email</label><input id="s-email" type="email" placeholder="you@email.com" /></div>
-  </div>
-  <div class="section">
-    <div class="row"><label>Twilio SID</label><input id="s-twilio-sid" placeholder="AC..." /></div>
-    <div class="row"><label>Twilio Auth</label><input id="s-twilio-auth" placeholder="auth token" /></div>
-    <div class="row"><label>Twilio From</label><input id="s-twilio-from" placeholder="+1..." /></div>
-    <div class="row"><label>Your Phone</label><input id="s-phone" type="tel" placeholder="+14045550123" /></div>
-  </div>
-  <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
-  <button class="btn" style="background:var(--card);color:var(--accent);margin-top:8px;" onclick="testNotifications()">Send Test Notification</button>
-  <div class="section-header" style="padding-top:16px;">Check Interval</div>
-  <div class="section">
-    <div class="row"><label>Frequency</label>
-      <select id="s-interval"><option value="60">Every hour</option><option value="360">Every 6 hours</option><option value="720">Every 12 hours</option></select>
-    </div>
-  </div>
-  <div class="bottom-safe"></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const BASE = '';
-let selected = { from: null, to: null };
-let debounce = {};
+// Popular airports for instant suggestions
+const POPULAR = [
+  {skyId:'ATL',entityId:'27537542',name:'Atlanta',sub:'Georgia, USA'},
+  {skyId:'LAX',entityId:'27544932',name:'Los Angeles',sub:'California, USA'},
+  {skyId:'JFK',entityId:'27537670',name:'New York JFK',sub:'New York, USA'},
+  {skyId:'LGA',entityId:'27537670',name:'New York LaGuardia',sub:'New York, USA'},
+  {skyId:'ORD',entityId:'27536959',name:'Chicago O\'Hare',sub:'Illinois, USA'},
+  {skyId:'MIA',entityId:'27539733',name:'Miami',sub:'Florida, USA'},
+  {skyId:'SFO',entityId:'27544218',name:'San Francisco',sub:'California, USA'},
+  {skyId:'DFW',entityId:'27539469',name:'Dallas Fort Worth',sub:'Texas, USA'},
+  {skyId:'SEA',entityId:'27544813',name:'Seattle',sub:'Washington, USA'},
+  {skyId:'BOS',entityId:'27537430',name:'Boston',sub:'Massachusetts, USA'},
+  {skyId:'LHR',entityId:'27544008',name:'London Heathrow',sub:'England, UK'},
+  {skyId:'CDG',entityId:'27539733',name:'Paris Charles de Gaulle',sub:'France'},
+  {skyId:'AMS',entityId:'27544008',name:'Amsterdam',sub:'Netherlands'},
+  {skyId:'ARN',entityId:'27544793',name:'Stockholm Arlanda',sub:'Sweden'},
+  {skyId:'FCO',entityId:'27538823',name:'Rome Fiumicino',sub:'Italy'},
+  {skyId:'BCN',entityId:'27536920',name:'Barcelona',sub:'Spain'},
+  {skyId:'MAD',entityId:'27537542',name:'Madrid',sub:'Spain'},
+  {skyId:'DXB',entityId:'27537242',name:'Dubai',sub:'UAE'},
+  {skyId:'NRT',entityId:'27544932',name:'Tokyo Narita',sub:'Japan'},
+  {skyId:'SYD',entityId:'27544813',name:'Sydney',sub:'Australia'},
+  {skyId:'CUN',entityId:'27539733',name:'Cancun',sub:'Mexico'},
+  {skyId:'MCO',entityId:'27539733',name:'Orlando',sub:'Florida, USA'},
+  {skyId:'LAS',entityId:'27539733',name:'Las Vegas',sub:'Nevada, USA'},
+  {skyId:'DEN',entityId:'27539733',name:'Denver',sub:'Colorado, USA'},
+  {skyId:'PHX',entityId:'27539733',name:'Phoenix',sub:'Arizona, USA'},
+  // Africa
+  {skyId:'ACC',entityId:'95673827',name:'Accra Kotoka',sub:'Ghana'},
+  {skyId:'LOS',entityId:'95673828',name:'Lagos Murtala Muhammed',sub:'Nigeria'},
+  {skyId:'ABV',entityId:'95673829',name:'Abuja',sub:'Nigeria'},
+  {skyId:'NBO',entityId:'95673830',name:'Nairobi Jomo Kenyatta',sub:'Kenya'},
+  {skyId:'JNB',entityId:'95673831',name:'Johannesburg OR Tambo',sub:'South Africa'},
+  {skyId:'CPT',entityId:'95673832',name:'Cape Town',sub:'South Africa'},
+  {skyId:'CAI',entityId:'95673833',name:'Cairo',sub:'Egypt'},
+  {skyId:'CMN',entityId:'95673834',name:'Casablanca',sub:'Morocco'},
+  {skyId:'ADD',entityId:'95673835',name:'Addis Ababa',sub:'Ethiopia'},
+  {skyId:'DAR',entityId:'95673836',name:'Dar es Salaam',sub:'Tanzania'},
+  // Middle East & Asia
+  {skyId:'BOM',entityId:'27539733',name:'Mumbai',sub:'India'},
+  {skyId:'DEL',entityId:'27539733',name:'New Delhi',sub:'India'},
+  {skyId:'SIN',entityId:'27539733',name:'Singapore Changi',sub:'Singapore'},
+  {skyId:'HKG',entityId:'27539733',name:'Hong Kong',sub:'China'},
+  {skyId:'ICN',entityId:'27539733',name:'Seoul Incheon',sub:'South Korea'},
+  {skyId:'BKK',entityId:'27539733',name:'Bangkok Suvarnabhumi',sub:'Thailand'},
+  {skyId:'KUL',entityId:'27539733',name:'Kuala Lumpur',sub:'Malaysia'},
+  {skyId:'DOH',entityId:'27539733',name:'Doha Hamad',sub:'Qatar'},
+  {skyId:'AUH',entityId:'27539733',name:'Abu Dhabi',sub:'UAE'},
+  // Europe
+  {skyId:'FRA',entityId:'27539733',name:'Frankfurt',sub:'Germany'},
+  {skyId:'MUC',entityId:'27539733',name:'Munich',sub:'Germany'},
+  {skyId:'ZUR',entityId:'27539733',name:'Zurich',sub:'Switzerland'},
+  {skyId:'VIE',entityId:'27539733',name:'Vienna',sub:'Austria'},
+  {skyId:'CPH',entityId:'27539733',name:'Copenhagen',sub:'Denmark'},
+  {skyId:'OSL',entityId:'27539733',name:'Oslo',sub:'Norway'},
+  {skyId:'HEL',entityId:'27539733',name:'Helsinki',sub:'Finland'},
+  {skyId:'IST',entityId:'27539733',name:'Istanbul',sub:'Turkey'},
+  // Americas
+  {skyId:'GRU',entityId:'27539733',name:'São Paulo Guarulhos',sub:'Brazil'},
+  {skyId:'GIG',entityId:'27539733',name:'Rio de Janeiro',sub:'Brazil'},
+  {skyId:'BOG',entityId:'27539733',name:'Bogotá',sub:'Colombia'},
+  {skyId:'LIM',entityId:'27539733',name:'Lima',sub:'Peru'},
+  {skyId:'MEX',entityId:'27539733',name:'Mexico City',sub:'Mexico'},
+  {skyId:'YYZ',entityId:'27539733',name:'Toronto Pearson',sub:'Canada'},
+  {skyId:'YVR',entityId:'27539733',name:'Vancouver',sub:'Canada'},
+  {skyId:'YUL',entityId:'27539733',name:'Montreal',sub:'Canada'},
+];
 
-// Set today as default date
+let sel = {from:null, to:null};
+let dbt = {};
+
 const d = new Date();
-document.getElementById('depart-date').value = d.toISOString().split('T')[0];
-document.getElementById('depart-date').min = d.toISOString().split('T')[0];
+document.getElementById('dep').value = d.toISOString().split('T')[0];
+document.getElementById('dep').min = d.toISOString().split('T')[0];
 
 function switchTab(name, btn) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
-  document.getElementById('page-' + name).classList.add('active');
-  if (name === 'alerts') loadAlerts();
+  document.getElementById('page-'+name).classList.add('active');
+  if(name==='alerts') loadAlerts();
 }
 
-function toast(msg, dur=2500) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), dur);
+function toast(msg, dur=3000) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), dur);
 }
 
-function handleInput(side, val) {
-  clearTimeout(debounce[side]);
-  selected[side] = null;
-  if (val.length < 2) { hideDrop(side); return; }
-  debounce[side] = setTimeout(() => fetchAirports(side, val), 350);
+function onInput(side, val) {
+  clearTimeout(dbt[side]);
+  sel[side]=null;
+  const q = val.trim().toLowerCase();
+  if(q.length < 1) { hide(side); return; }
+
+  // Instantly show local matches
+  const local = POPULAR.filter(a =>
+    a.skyId.toLowerCase().startsWith(q) ||
+    a.name.toLowerCase().includes(q) ||
+    a.sub.toLowerCase().includes(q)
+  );
+  if(local.length) showDrop(side, local);
+
+  // Also fetch from API after short delay
+  dbt[side] = setTimeout(() => fetchAirports(side, val), 400);
 }
 
 async function fetchAirports(side, q) {
   try {
     const r = await fetch(`/api/search-airport?q=${encodeURIComponent(q)}`);
     const json = await r.json();
-    showDrop(side, json.data || []);
-  } catch { hideDrop(side); }
+    const data = json.data || [];
+    if(data.length) {
+      showDrop(side, data.map(i=>({
+        skyId: i.skyId||'',
+        entityId: i.entityId||'',
+        name: i.presentation?.title || i.name || i.skyId || '',
+        sub: i.presentation?.subtitle || i.countryName || ''
+      })));
+    } else {
+      // If API returns empty, keep showing local matches
+      const q2 = document.getElementById(side+'-in').value.trim().toLowerCase();
+      const local = POPULAR.filter(a =>
+        a.skyId.toLowerCase().startsWith(q2) ||
+        a.name.toLowerCase().includes(q2) ||
+        a.sub.toLowerCase().includes(q2)
+      );
+      if(local.length) showDrop(side, local);
+      else showDrop(side, [{skyId:'?', entityId:'', name:'No results found for "'+q+'"', sub:'Try IATA code e.g. ACC, LHR'}]);
+    }
+  } catch(e) {
+    console.error('Airport search error:', e);
+    // Show error in dropdown so user knows what happened
+    document.getElementById(side+'-drop').innerHTML = `<div class="drop-item" style="color:var(--danger)">⚠ Search error — try typing the IATA code (e.g. ACC)</div>`;
+    document.getElementById(side+'-drop').style.display='block';
+  }
 }
 
 function showDrop(side, items) {
-  const box = document.getElementById(side + '-drop');
-  if (!items.length) { box.style.display = 'none'; return; }
-  box.innerHTML = items.slice(0,5).map(item => {
-    const iata = item.skyId || '';
-    const name = item.presentation?.title || item.name || '';
-    const sub  = item.presentation?.subtitle || '';
-    const label = `${name}${sub ? ', '+sub : ''}`;
-    return `<div class="dropdown-item" onclick="pick('${side}','${iata}','${item.entityId}','${label.replace(/'/g,"\\'")}')">
-      <span class="iata">${iata}</span>
-      <span class="airport-name">${name}<br><small>${sub}</small></span>
-    </div>`;
-  }).join('');
-  box.style.display = 'block';
+  const box = document.getElementById(side+'-drop');
+  if(!items.length){box.style.display='none';return;}
+  box.innerHTML = items.slice(0,6).map(a=>`
+    <div class="drop-item" onclick="pick('${side}','${a.skyId}','${a.entityId||''}','${(a.name+(a.sub?', '+a.sub:'')).replace(/'/g,"\\'")}')">
+      <span class="iata">${a.skyId}</span>
+      <div><div class="aname">${a.name}</div><div class="asub">${a.sub||''}</div></div>
+    </div>`).join('');
+  box.style.display='block';
 }
 
 function pick(side, skyId, entityId, label) {
-  selected[side] = { skyId, entityId, label };
-  document.getElementById(side + '-input').value = label;
-  hideDrop(side);
+  sel[side]={skyId, entityId, label};
+  document.getElementById(side+'-in').value=label;
+  hide(side);
+  toast(`✓ ${label}`);
 }
 
-function hideDrop(side) { document.getElementById(side + '-drop').style.display = 'none'; }
-document.addEventListener('click', e => { if (!e.target.closest('.autocomplete-wrap')) { hideDrop('from'); hideDrop('to'); } });
+function hide(side){document.getElementById(side+'-drop').style.display='none';}
+document.addEventListener('click', e=>{
+  if(!e.target.closest('#from-row')) hide('from');
+  if(!e.target.closest('#to-row')) hide('to');
+});
 
 async function doSearch() {
-  const from = selected.from, to = selected.to;
-  const date = document.getElementById('depart-date').value;
-  if (!from || !to || !date) { toast('⚠️ Select origin, destination & date'); return; }
-
-  const btn = document.getElementById('search-btn');
-  btn.disabled = true; btn.textContent = 'Searching…';
-  document.getElementById('results').innerHTML = `<div class="loading"><div class="spinner"></div> Fetching live prices…</div>`;
-
+  const from=sel.from, to=sel.to, date=document.getElementById('dep').value;
+  if(!from||!to||!date){toast('⚠️ Select origin & destination from the list');return;}
+  const btn=document.getElementById('sbtn');
+  btn.disabled=true; btn.textContent='Searching…';
+  document.getElementById('results').innerHTML=`<div class="loading"><div class="spinner"></div> Fetching live prices…</div>`;
   try {
-    const params = new URLSearchParams({
-      originSkyId: from.skyId, destinationSkyId: to.skyId,
-      originEntityId: from.entityId, destinationEntityId: to.entityId,
-      date, adults: document.getElementById('adults').value,
-      cabinClass: document.getElementById('cabin').value,
+    const params=new URLSearchParams({
+      originSkyId:from.skyId, destinationSkyId:to.skyId,
+      originEntityId:from.entityId, destinationEntityId:to.entityId,
+      date, adults:document.getElementById('pax').value,
+      cabinClass:document.getElementById('cabin').value,
     });
-    const ret = document.getElementById('return-date').value;
-    if (ret) params.set('returnDate', ret);
-
-    const r = await fetch(`/api/search-flights?${params}`);
-    const json = await r.json();
+    const ret=document.getElementById('ret').value;
+    if(ret) params.set('returnDate',ret);
+    const r=await fetch(`/api/search-flights?${params}`);
+    const json=await r.json();
     renderResults(json, from, to);
   } catch(e) {
-    document.getElementById('results').innerHTML = `<div class="loading" style="color:var(--danger)">Error: ${e.message}</div>`;
+    document.getElementById('results').innerHTML=`<div class="err">Error: ${e.message}</div>`;
   } finally {
-    btn.disabled = false; btn.textContent = 'Search Flights';
+    btn.disabled=false; btn.textContent='Search Flights';
   }
 }
 
 function renderResults(json, from, to) {
-  const its = json?.data?.itineraries || [];
-  if (!its.length) {
-    document.getElementById('results').innerHTML = `<div class="empty"><span class="empty-icon">🔍</span><h3>No flights found</h3><p>Try different dates or airports</p></div>`;
+  const its=json?.data?.itineraries||[];
+  if(!its.length){
+    document.getElementById('results').innerHTML=`<div class="empty"><span class="empty-icon">🔍</span><p>No flights found. Try different dates.</p></div>`;
     return;
   }
-
-  const prices = its.map(i => i.price?.raw||0).filter(p=>p>0);
-  const min = Math.min(...prices), avg = Math.round(prices.reduce((a,b)=>a+b,0)/prices.length);
-
-  let html = `<div class="results-meta"><span><span class="live-dot"></span>Live Skyscanner prices</span><span>${its.length} flights found</span></div>
+  const prices=its.map(i=>i.price?.raw||0).filter(p=>p>0);
+  const min=Math.min(...prices), avg=Math.round(prices.reduce((a,b)=>a+b,0)/prices.length);
+  let html=`<div style="font-size:13px;color:var(--subtext);padding:8px 0;display:flex;justify-content:space-between;"><span><span class="live-dot"></span>Live Skyscanner prices</span><span>${its.length} flights</span></div>
   <div class="stat-row">
     <div class="stat"><div class="stat-val" style="color:var(--success)">$${Math.round(min)}</div><div class="stat-lbl">Lowest</div></div>
     <div class="stat"><div class="stat-val">$${avg}</div><div class="stat-lbl">Average</div></div>
   </div>`;
-
-  its.slice(0,8).forEach((it, idx) => {
-    const price = Math.round(it.price?.raw||0);
-    const fmt   = it.price?.formatted || `$${price}`;
-    const leg   = it.legs?.[0] || {};
-    const carrier = (leg.carriers?.marketing||[])[0] || {};
-    const dep   = leg.departure ? new Date(leg.departure).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}) : '--';
-    const arr   = leg.arrival   ? new Date(leg.arrival).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}) : '--';
-    const dur   = leg.durationInMinutes ? `${Math.floor(leg.durationInMinutes/60)}h ${leg.durationInMinutes%60}m` : '--';
-    const stops = leg.stopCount || 0;
-    const isMin = price === min;
-
-    html += `<div class="flight-card">
-      <div class="flight-top">
+  its.slice(0,8).forEach((it,idx)=>{
+    const price=Math.round(it.price?.raw||0);
+    const fmt=it.price?.formatted||`$${price}`;
+    const leg=it.legs?.[0]||{};
+    const carrier=(leg.carriers?.marketing||[])[0]||{};
+    const dep=leg.departure?new Date(leg.departure).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}):'--';
+    const arr=leg.arrival?new Date(leg.arrival).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}):'--';
+    const dur=leg.durationInMinutes?`${Math.floor(leg.durationInMinutes/60)}h ${leg.durationInMinutes%60}m`:'--';
+    const stops=leg.stopCount||0;
+    const isMin=price===min;
+    html+=`<div class="flight-card">
+      <div class="f-top">
         <div>
-          <div class="flight-airline">${carrier.name||'Unknown'}</div>
-          <div class="flight-route">${dep} → ${arr}</div>
-          <div class="flight-detail">${dur} · ${stops===0?'Nonstop':stops+' stop'+(stops>1?'s':'')}</div>
+          <div class="f-airline">${carrier.name||'Unknown airline'}</div>
+          <div class="f-times">${dep} → ${arr}</div>
+          <div class="f-detail">${dur} · ${stops===0?'Nonstop':stops+' stop'+(stops>1?'s':'')}</div>
         </div>
-        <div class="flight-price">
-          <div class="price-num">${fmt}</div>
-          <div class="price-label">per person</div>
-        </div>
+        <div class="f-price"><div class="price-num">${fmt}</div><div class="price-lbl">per person</div></div>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
-        <div>${isMin?'<span class="tag tag-green">Lowest price</span>':''}</div>
-        <button onclick="openSetAlert(${idx},'${(carrier.name||'').replace(/'/g,"\\'")}',${price},'${from.skyId}','${to.skyId}','${from.entityId}','${to.entityId}','${from.label.replace(/'/g,"\\'")}','${to.label.replace(/'/g,"\\'")}')}" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;">+ Alert</button>
+      <div class="f-footer">
+        <div>${isMin?'<span class="tag tag-green">✓ Lowest</span>':''}</div>
+        <button class="alert-btn" onclick="setAlert(${idx},'${(carrier.name||'').replace(/'/g,"\\'")}',${price},'${from.skyId}','${to.skyId}','${from.entityId}','${to.entityId}','${from.label.replace(/'/g,"\\'")}','${to.label.replace(/'/g,"\\'")}')">+ Alert</button>
       </div>
     </div>`;
   });
-
-  document.getElementById('results').innerHTML = html;
-  window._its = its;
+  document.getElementById('results').innerHTML=html;
+  window._its=its;
 }
 
-function openSetAlert(idx, airline, price, oSky, dSky, oEnt, dEnt, fromLabel, toLabel) {
-  const target = prompt(`Set alert for ${fromLabel.split(',')[0]} → ${toLabel.split(',')[0]}\n\nCurrent price: $${price}\nAlert me when price drops below ($):`, Math.round(price * 0.9));
-  if (!target) return;
-  const date = document.getElementById('depart-date').value;
-  const ret  = document.getElementById('return-date').value;
-  const adults = document.getElementById('adults').value;
-  const cabin  = document.getElementById('cabin').value;
-
-  fetch('/api/alerts', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      route:               `${fromLabel.split(',')[0]} → ${toLabel.split(',')[0]}`,
-      originSkyId:         oSky, destinationSkyId: dSky,
-      originEntityId:      oEnt, destinationEntityId: dEnt,
-      departDate:          date, returnDate: ret||undefined,
-      targetPrice:         parseFloat(target),
-      adults, cabinClass:  cabin, airline,
+function setAlert(idx,airline,price,oSky,dSky,oEnt,dEnt,fl,tl) {
+  const target=prompt(`Alert for ${fl.split(',')[0]} → ${tl.split(',')[0]}\nCurrent: $${price}\nAlert me when price drops below:`, Math.round(price*0.9));
+  if(!target) return;
+  const date=document.getElementById('dep').value;
+  const ret=document.getElementById('ret').value;
+  fetch('/api/alerts',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      route:`${fl.split(',')[0]} → ${tl.split(',')[0]}`,
+      originSkyId:oSky,destinationSkyId:dSky,
+      originEntityId:oEnt,destinationEntityId:dEnt,
+      departDate:date,returnDate:ret||undefined,
+      targetPrice:parseFloat(target),
+      adults:document.getElementById('pax').value,
+      cabinClass:document.getElementById('cabin').value,
+      airline
     })
   }).then(r=>r.json()).then(d=>{
-    if (d.success) { toast('🔔 Alert set! You\'ll be notified when price drops.'); loadBadge(); }
-    else toast('Error: ' + (d.error||'unknown'));
-  }).catch(()=>toast('Failed to create alert'));
+    if(d.success){toast('🔔 Alert set!');loadBadge();}
+    else toast('Error: '+(d.error||'unknown'));
+  }).catch(()=>toast('Failed to save alert'));
 }
 
 async function loadAlerts() {
-  const list = document.getElementById('alerts-list');
-  list.innerHTML = `<div class="loading"><div class="spinner"></div> Loading…</div>`;
+  const list=document.getElementById('alist');
+  list.innerHTML=`<div class="loading"><div class="spinner"></div></div>`;
   try {
-    const r = await fetch('/api/alerts');
-    const alerts = await r.json();
-    if (!alerts.length) {
-      list.innerHTML = `<div class="empty"><span class="empty-icon">🔔</span><h3>No alerts yet</h3><p>Search for a flight and tap + Alert</p></div>`;
+    const alerts=await fetch('/api/alerts').then(r=>r.json());
+    if(!alerts.length){
+      list.innerHTML=`<div class="empty"><span class="empty-icon">🔔</span><p>No alerts yet. Search a flight and tap + Alert</p></div>`;
       return;
     }
-    list.innerHTML = alerts.map(a => `
+    list.innerHTML=alerts.map(a=>`
       <div class="alert-card">
-        <div class="alert-info">
-          <div class="alert-route">${a.route}</div>
-          <div class="alert-meta">${a.departDate}${a.returnDate?' → '+a.returnDate:''} · ${a.cabinClass||'economy'} · ${a.adults||1} pax</div>
-          <div class="alert-prices">
-            <div class="alert-price-item">Current<span class="${a.currentPrice&&a.currentPrice<=a.targetPrice?'green':''}">${a.currentPrice?'$'+Math.round(a.currentPrice):'--'}</span></div>
-            <div class="alert-price-item">Target<span class="green">$${Math.round(a.targetPrice)}</span></div>
-            <div class="alert-price-item">Checks<span>${a.triggeredCount||0} alerts sent</span></div>
+        <div class="a-info">
+          <div class="a-route">${a.route}</div>
+          <div class="a-meta">${a.departDate} · ${a.cabinClass||'economy'} · ${a.adults||1} pax</div>
+          <div class="a-prices">
+            <div class="a-p">Current<span class="${a.currentPrice&&a.currentPrice<=a.targetPrice?'green':''}">${a.currentPrice?'$'+Math.round(a.currentPrice):'--'}</span></div>
+            <div class="a-p">Target<span class="green">$${Math.round(a.targetPrice)}</span></div>
+            <div class="a-p">Alerts<span>${a.triggeredCount||0} sent</span></div>
           </div>
-          ${a.lastChecked?`<div style="font-size:11px;color:var(--subtext);margin-top:4px;">Last checked: ${new Date(a.lastChecked).toLocaleString()}</div>`:''}
+          ${a.lastChecked?`<div style="font-size:11px;color:var(--subtext);margin-top:4px;">Checked: ${new Date(a.lastChecked).toLocaleString()}</div>`:''}
         </div>
-        <button class="delete-btn" onclick="deleteAlert('${a.id}')">✕</button>
+        <button class="del-btn" onclick="delAlert('${a.id}')">✕</button>
       </div>`).join('');
-    document.getElementById('alert-badge').textContent = alerts.length;
-    document.getElementById('alert-badge').style.display = alerts.length ? '' : 'none';
-  } catch(e) {
-    list.innerHTML = `<div class="loading" style="color:var(--danger)">Error loading alerts</div>`;
+    document.getElementById('abadge').textContent=alerts.length;
+    document.getElementById('abadge').style.display=alerts.length?'':'none';
+  } catch(e){
+    list.innerHTML=`<div class="err">Error loading alerts: ${e.message}</div>`;
   }
 }
 
-function loadBadge() {
-  fetch('/api/alerts').then(r=>r.json()).then(a=>{
-    document.getElementById('alert-badge').textContent = a.length;
-    document.getElementById('alert-badge').style.display = a.length ? '' : 'none';
-  });
-}
-
-async function deleteAlert(id) {
-  if (!confirm('Remove this alert?')) return;
-  await fetch(`/api/alerts/${id}`, { method: 'DELETE' });
-  toast('Alert removed'); loadAlerts();
-}
-
-async function saveSettings() {
-  const settings = {
-    PUSHOVER_TOKEN: document.getElementById('s-push-token').value,
-    PUSHOVER_USER:  document.getElementById('s-push-user').value,
-    RESEND_API_KEY: document.getElementById('s-resend').value,
-    ALERT_EMAIL_TO: document.getElementById('s-email').value,
-    TWILIO_SID:     document.getElementById('s-twilio-sid').value,
-    TWILIO_AUTH:    document.getElementById('s-twilio-auth').value,
-    TWILIO_FROM:    document.getElementById('s-twilio-from').value,
-    ALERT_PHONE:    document.getElementById('s-phone').value,
-  };
-  await fetch('/api/settings', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(settings) });
-  toast('✅ Settings saved');
-}
-
-async function testNotifications() {
-  await fetch('/api/test-notify', { method: 'POST' });
-  toast('📱 Test notification sent!');
-}
-
+function loadBadge(){fetch('/api/alerts').then(r=>r.json()).then(a=>{document.getElementById('abadge').textContent=a.length;document.getElementById('abadge').style.display=a.length?'':'none';});}
+async function delAlert(id){if(!confirm('Remove alert?'))return;await fetch(`/api/alerts/${id}`,{method:'DELETE'});toast('Removed');loadAlerts();}
 loadBadge();
 </script>
 </body>
