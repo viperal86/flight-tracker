@@ -580,28 +580,21 @@ function onType(side,val){
   sel[side]=null;
   const q=val.trim().toLowerCase();
   if(q.length<1){hideDrop(side);return;}
-
-  // Instantly show local matches
+  // Show local matches instantly
   const local=AIRPORTS.filter(a=>
     a.skyId.toLowerCase().startsWith(q)||
     a.name.toLowerCase().includes(q)||
     a.country.toLowerCase().includes(q)
   ).slice(0,6);
-
-  if(local.length){
-    showDrop(side,local);
-  } else {
-    // Show loading while we fetch
-    showLoading(side);
-  }
-
-  // Always also hit the API for best results
+  if(local.length) renderDrop(side,local,false);
+  else showLoading(side);
+  // Always fetch from API (gets real entityIds)
   searchTimeout[side]=setTimeout(()=>fetchAirports(side,val),400);
 }
 
 function showLoading(side){
   const box=document.getElementById('dp-'+side);
-  box.innerHTML=`<div class="di loading-row"><div class="spin"></div> Searching…</div>`;
+  box.innerHTML='<div class="di loading-row"><div class="spin"></div> Searching…</div>';
   box.style.display='block';
 }
 
@@ -615,19 +608,21 @@ async function fetchAirports(side,q){
       name:i.presentation?.title||i.name||i.skyId||'',
       country:i.presentation?.subtitle||i.countryName||''
     })).filter(a=>a.skyId);
-
     if(data.length){
-      showDrop(side,data);
+      renderDrop(side,data,true); // true = real entityIds from API
     } else {
-      // Fall back to local
       const q2=document.getElementById('in-'+side).value.trim().toLowerCase();
       const local=AIRPORTS.filter(a=>
         a.skyId.toLowerCase().startsWith(q2)||
         a.name.toLowerCase().includes(q2)||
         a.country.toLowerCase().includes(q2)
       ).slice(0,6);
-      if(local.length) showDrop(side,local);
-      else showDrop(side,[{skyId:'',entityId:'',name:'No results — try the IATA code (e.g. ACC, LHR)',country:''}],true);
+      if(local.length) renderDrop(side,local,false);
+      else{
+        const box=document.getElementById('dp-'+side);
+        box.innerHTML='<div class="di msg">No results found</div>';
+        box.style.display='block';
+      }
     }
   }catch(e){
     const q2=document.getElementById('in-'+side).value.trim().toLowerCase();
@@ -636,33 +631,49 @@ async function fetchAirports(side,q){
       a.name.toLowerCase().includes(q2)||
       a.country.toLowerCase().includes(q2)
     ).slice(0,6);
-    if(local.length) showDrop(side,local);
-    else{
-      const box=document.getElementById('dp-'+side);
-      box.innerHTML=`<div class="di msg">⚠ Search unavailable — try IATA code e.g. ACC</div>`;
-      box.style.display='block';
-    }
+    if(local.length) renderDrop(side,local,false);
   }
 }
 
-function showDrop(side,items,noSelect){
+function renderDrop(side,items,hasRealEntityId){
   const box=document.getElementById('dp-'+side);
-  box.innerHTML=items.map(a=>
-    noSelect||!a.skyId
-      ? `<div class="di msg">${a.name}</div>`
-      : `<div class="di" onclick="pick('${side}','${a.skyId}','${a.entityId}','${(a.name+', '+a.country).replace(/'/g,"\\'")}')">
-           <span class="code">${a.skyId}</span>
-           <div><div class="nm">${a.name}</div><div class="ct">${a.country}</div></div>
-         </div>`
-  ).join('');
+  let html='';
+  items.forEach(a=>{
+    const label=(a.name+', '+a.country).replace(/"/g,'&quot;').replace(/\\/g,'');
+    const labelJs=(a.name+', '+a.country).replace(/'/g,"\'");
+    html+=`<div class="di" onclick="pick('${side}','${a.skyId}','${a.entityId}','${labelJs}',${hasRealEntityId})">
+      <span class="code">${a.skyId}</span>
+      <div><div class="nm">${a.name}</div><div class="ct">${a.country}</div></div>
+    </div>`;
+  });
+  box.innerHTML=html;
   box.style.display='block';
 }
 
-function pick(side,skyId,entityId,label){
-  sel[side]={skyId,entityId,label};
+async function pick(side,skyId,entityId,label,hasRealEntityId){
+  if(hasRealEntityId){
+    sel[side]={skyId,entityId,label};
+    document.getElementById('in-'+side).value=label;
+    hideDrop(side);
+    toast('✓ '+label.split(',')[0]);
+    return;
+  }
+  // Local result: fetch real entityId from API
   document.getElementById('in-'+side).value=label;
   hideDrop(side);
   toast('✓ '+label.split(',')[0]);
+  try{
+    const r=await fetch('/api/search-airport?q='+encodeURIComponent(skyId));
+    const json=await r.json();
+    const match=(json.data||[]).find(i=>i.skyId===skyId)||(json.data||[])[0];
+    if(match){
+      sel[side]={skyId:match.skyId,entityId:match.entityId,label};
+    } else {
+      sel[side]={skyId,entityId,label};
+    }
+  }catch(e){
+    sel[side]={skyId,entityId,label};
+  }
 }
 
 function hideDrop(side){document.getElementById('dp-'+side).style.display='none';}
