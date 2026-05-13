@@ -8,8 +8,8 @@ const path = require('path');
 
 const app = express();
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
-app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
+app.use(express.static(__dirname));
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
 // ─── CONFIG (set these as environment variables on Railway) ───────────────────
 const CONFIG = {
@@ -272,3 +272,19 @@ app.get('/api/search-flights', async (req, res) => {
 app.get('/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString(), alertCount: loadAlerts().length }));
 
 app.listen(CONFIG.PORT, () => console.log(`✈️  Flight tracker running on port ${CONFIG.PORT}`));
+
+// Debug endpoint — test airport search directly
+app.get('/api/debug-airport', async (req, res) => {
+  const q = req.query.q || 'london';
+  try {
+    const url = `https://${API_HOST}/api/v1/flights/searchAirport?query=${encodeURIComponent(q)}&locale=en-US`;
+    console.log('Debug airport search:', url);
+    const r = await fetch(url, { headers: HEADERS });
+    const text = await r.text();
+    console.log('Response status:', r.status);
+    console.log('Response body:', text.slice(0, 500));
+    res.json({ status: r.status, url, body: JSON.parse(text) });
+  } catch(e) {
+    res.json({ error: e.message });
+  }
+});
