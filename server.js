@@ -1,7 +1,7 @@
 const express = require('express');
 const cron = require('node-cron');
 const fetch = require('node-fetch');
-const nodemailer = require('nodemailer');
+
 const twilio = require('twilio');
 const fs = require('fs');
 const path = require('path');
