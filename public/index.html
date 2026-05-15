@@ -725,7 +725,9 @@ async function doSearch(){
 }
 
 function renderResults(json,from,to){
-  const its=json?.data?.itineraries||[];
+  // Handle both {data:{itineraries:[]}} and {itineraries:[]}
+  const its=json?.data?.itineraries||json?.itineraries||[];
+  console.log('Render: its='+its.length+', keys='+Object.keys(json||{}).join(','));
   if(!its.length){
     document.getElementById('res').innerHTML=`<div class="empty"><i>🔍</i><p>No flights found. Try different dates.</p></div>`;
     return;
