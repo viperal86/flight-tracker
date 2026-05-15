@@ -53,14 +53,29 @@ async function searchAirport(query) {
   return (json.data || [])[0] || null;
 }
 
-async function getLowestPrice({ originSkyId, destinationSkyId, originEntityId, destinationEntityId, date, adults = 1, cabinClass = 'economy', returnDate }) {
-  const params = new URLSearchParams({
-    originSkyId, destinationSkyId, originEntityId, destinationEntityId,
-    date, adults, cabinClass, currency: 'USD', market: 'en-US', countryCode: 'US',
-    ...(returnDate && { returnDate })
+async function searchFlightsWithPolling(params, maxAttempts = 5) {
+  const urlParams = new URLSearchParams({
+    ...params, currency: 'USD', market: 'en-US', countryCode: 'US'
   });
-  const res = await fetch(`https://${API_HOST}/api/v2/flights/searchFlights?${params}`, { headers: HEADERS });
-  const json = await res.json();
+  for (let i = 0; i < maxAttempts; i++) {
+    const res = await fetch(`https://${API_HOST}/api/v2/flights/searchFlights?${urlParams}`, { headers: HEADERS });
+    const json = await res.json();
+    const data = json?.data || {};
+    const itineraries = data.itineraries || [];
+    const status = data.context?.status;
+    console.log(`Poll ${i+1}: status=${status}, results=${itineraries.length}`);
+    if (itineraries.length > 0) return json;
+    if (status === 'complete') return json;
+    await new Promise(r => setTimeout(r, 2000));
+  }
+  return null;
+}
+
+async function getLowestPrice({ originSkyId, destinationSkyId, originEntityId, destinationEntityId, date, adults = 1, cabinClass = 'economy', returnDate }) {
+  const json = await searchFlightsWithPolling({
+    originSkyId, destinationSkyId, originEntityId, destinationEntityId,
+    date, adults, cabinClass, ...(returnDate && { returnDate })
+  });
   const itineraries = json?.data?.itineraries || [];
   if (!itineraries.length) return null;
   const prices = itineraries.map(i => i.price?.raw || 0).filter(p => p > 0);
@@ -259,12 +274,12 @@ app.get('/api/search-airport', async (req, res) => {
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
-// Search flights proxy
+// Search flights proxy — polls until results arrive
 app.get('/api/search-flights', async (req, res) => {
   try {
-    const params = new URLSearchParams({ ...req.query, currency: 'USD', market: 'en-US', countryCode: 'US' });
-    const r = await fetch(`https://${API_HOST}/api/v2/flights/searchFlights?${params}`, { headers: HEADERS });
-    res.json(await r.json());
+    const result = await searchFlightsWithPolling(req.query);
+    if (!result) return res.json({ data: { itineraries: [] } });
+    res.json(result);
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
