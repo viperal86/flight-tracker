@@ -651,28 +651,43 @@ function renderDrop(side,items,hasRealEntityId){
 }
 
 async function pick(side,skyId,entityId,label,hasRealEntityId){
+  hideDrop(side);
   if(hasRealEntityId){
     sel[side]={skyId,entityId,label};
     document.getElementById('in-'+side).value=label;
-    hideDrop(side);
-    toast('✓ '+label.split(',')[0]);
+    updateSearchBtn();
     return;
   }
-  // Local result: fetch real entityId from API
-  document.getElementById('in-'+side).value=label;
-  hideDrop(side);
-  toast('✓ '+label.split(',')[0]);
+  // Local result — show loading, fetch real entityId before allowing search
+  sel[side]=null;
+  document.getElementById('in-'+side).value=label+' ✓';
+  document.getElementById('sbtn').disabled=true;
+  document.getElementById('sbtn').textContent='Confirming airport…';
   try{
     const r=await fetch('/api/search-airport?q='+encodeURIComponent(skyId));
     const json=await r.json();
-    const match=(json.data||[]).find(i=>i.skyId===skyId)||(json.data||[])[0];
+    const data=json.data||[];
+    const match=data.find(i=>i.skyId===skyId)||data[0];
     if(match){
-      sel[side]={skyId:match.skyId,entityId:match.entityId,label};
+      sel[side]={skyId:match.skyId||skyId,entityId:match.entityId||entityId,label};
     } else {
       sel[side]={skyId,entityId,label};
     }
   }catch(e){
     sel[side]={skyId,entityId,label};
+  }
+  document.getElementById('in-'+side).value=label;
+  updateSearchBtn();
+}
+
+function updateSearchBtn(){
+  const btn=document.getElementById('sbtn');
+  if(sel.from&&sel.to){
+    btn.disabled=false;
+    btn.textContent='Search Flights';
+  } else {
+    btn.disabled=false;
+    btn.textContent='Search Flights';
   }
 }
 
@@ -690,6 +705,7 @@ async function doSearch(){
   btn.disabled=true; btn.textContent='Searching…';
   document.getElementById('res').innerHTML=`<div class="ld"><div class="spin"></div> Fetching live prices (5–10s)…</div>`;
   try{
+    console.log('Searching with:', JSON.stringify({from:sel.from, to:sel.to}));
     const p=new URLSearchParams({
       originSkyId:from.skyId,destinationSkyId:to.skyId,
       originEntityId:from.entityId,destinationEntityId:to.entityId,
