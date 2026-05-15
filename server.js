@@ -60,15 +60,19 @@ async function searchFlightsWithPolling(params, maxAttempts = 6) {
   let lastJson = null;
   for (let i = 0; i < maxAttempts; i++) {
     const res = await fetch(`https://${API_HOST}/api/v2/flights/searchFlights?${urlParams}`, { headers: HEADERS });
-    const json = await res.json();
+    const rawText = await res.text();
+    console.log(`Poll ${i+1} raw (first 300): ${rawText.slice(0,300)}`);
+    let json;
+    try { json = JSON.parse(rawText); } catch(e) { console.log('Parse error:', e.message); continue; }
     lastJson = json;
-    // Handle both response shapes: {data:{itineraries:[]}} and {itineraries:[]}
-    const data = json?.data || json || {};
-    const itineraries = data.itineraries || [];
-    const status = data.context?.status || json?.context?.status;
-    console.log(`Poll ${i+1}: status=${status}, results=${itineraries.length}, keys=${Object.keys(data).join(',')}`);
+    // Log full structure
+    const topKeys = Object.keys(json||{}).join(',');
+    const dataKeys = Object.keys(json?.data||{}).join(',');
+    const itineraries = json?.data?.itineraries || json?.itineraries || [];
+    const status = json?.data?.context?.status || json?.context?.status || json?.status;
+    console.log(`Poll ${i+1}: topKeys=${topKeys} dataKeys=${dataKeys} status=${status} its=${itineraries.length}`);
     if (itineraries.length > 0) return json;
-    if (status === 'complete') return json;
+    if (status === 'complete' && itineraries.length === 0) { await new Promise(r=>setTimeout(r,2500)); continue; }
     await new Promise(r => setTimeout(r, 2500));
   }
   return lastJson;
