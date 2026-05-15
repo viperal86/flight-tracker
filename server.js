@@ -82,7 +82,7 @@ async function getLowestPrice({ originSkyId, destinationSkyId, originEntityId, d
   const json = await searchFlightsWithPolling({
     originSkyId, destinationSkyId, originEntityId, destinationEntityId,
     date, adults, cabinClass, ...(returnDate && { returnDate })
-  });
+  }, 2); // Only 2 polls for background checks to save API quota
   const itineraries = json?.data?.itineraries || [];
   if (!itineraries.length) return null;
   const prices = itineraries.map(i => i.price?.raw || 0).filter(p => p > 0);
@@ -202,8 +202,8 @@ async function checkAllAlerts() {
   saveAlerts(alerts);
 }
 
-// Run every hour at :05
-cron.schedule('5 * * * *', checkAllAlerts);
+// Run twice daily at 8am and 8pm
+cron.schedule('0 8,20 * * *', checkAllAlerts);
 
 // ─── API ROUTES ───────────────────────────────────────────────────────────────
 
