@@ -53,22 +53,25 @@ async function searchAirport(query) {
   return (json.data || [])[0] || null;
 }
 
-async function searchFlightsWithPolling(params, maxAttempts = 5) {
+async function searchFlightsWithPolling(params, maxAttempts = 6) {
   const urlParams = new URLSearchParams({
     ...params, currency: 'USD', market: 'en-US', countryCode: 'US'
   });
+  let lastJson = null;
   for (let i = 0; i < maxAttempts; i++) {
     const res = await fetch(`https://${API_HOST}/api/v2/flights/searchFlights?${urlParams}`, { headers: HEADERS });
     const json = await res.json();
-    const data = json?.data || {};
+    lastJson = json;
+    // Handle both response shapes: {data:{itineraries:[]}} and {itineraries:[]}
+    const data = json?.data || json || {};
     const itineraries = data.itineraries || [];
-    const status = data.context?.status;
-    console.log(`Poll ${i+1}: status=${status}, results=${itineraries.length}`);
+    const status = data.context?.status || json?.context?.status;
+    console.log(`Poll ${i+1}: status=${status}, results=${itineraries.length}, keys=${Object.keys(data).join(',')}`);
     if (itineraries.length > 0) return json;
     if (status === 'complete') return json;
-    await new Promise(r => setTimeout(r, 2000));
+    await new Promise(r => setTimeout(r, 2500));
   }
-  return null;
+  return lastJson;
 }
 
 async function getLowestPrice({ originSkyId, destinationSkyId, originEntityId, destinationEntityId, date, adults = 1, cabinClass = 'economy', returnDate }) {
