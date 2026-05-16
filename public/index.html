@@ -705,13 +705,18 @@ async function doSearch(){
   btn.disabled=true; btn.textContent='Searching…';
   document.getElementById('res').innerHTML=`<div class="ld"><div class="spin"></div> Fetching live prices (5–10s)…</div>`;
   try{
-    console.log('Searching with:', JSON.stringify({from:sel.from, to:sel.to}));
+    console.log('FROM:', JSON.stringify(sel.from));
+    console.log('TO:', JSON.stringify(sel.to));
     const p=new URLSearchParams({
-      originSkyId:from.skyId,destinationSkyId:to.skyId,
-      originEntityId:from.entityId,destinationEntityId:to.entityId,
-      date,adults:document.getElementById('pax').value,
+      originSkyId:from.skyId,
+      destinationSkyId:to.skyId,
+      originEntityId:from.entityId,
+      destinationEntityId:to.entityId,
+      date,
+      adults:document.getElementById('pax').value,
       cabinClass:document.getElementById('cabin').value,
     });
+    console.log('Params:', p.toString());
     const ret=document.getElementById('ret').value;
     if(ret) p.set('returnDate',ret);
     const r=await fetch('/api/search-flights?'+p);
