@@ -603,9 +603,9 @@ async function fetchAirports(side,q){
     const r=await fetch('/api/search-airport?q='+encodeURIComponent(q));
     const json=await r.json();
     const data=(json.data||[]).map(i=>({
-      skyId:i.skyId||'',
-      entityId:i.entityId||'',
-      name:i.presentation?.title||i.name||i.skyId||'',
+      skyId:i.navigation?.relevantFlightParams?.skyId||i.skyId||'',
+      entityId:i.navigation?.relevantFlightParams?.entityId||i.navigation?.entityId||i.entityId||'',
+      name:i.presentation?.title||i.name||'',
       country:i.presentation?.subtitle||i.countryName||''
     })).filter(a=>a.skyId);
     if(data.length){
@@ -652,43 +652,32 @@ function renderDrop(side,items,hasRealEntityId){
 
 async function pick(side,skyId,entityId,label,hasRealEntityId){
   hideDrop(side);
-  if(hasRealEntityId){
-    sel[side]={skyId,entityId,label};
-    document.getElementById('in-'+side).value=label;
-    updateSearchBtn();
-    return;
-  }
-  // Local result — show loading, fetch real entityId before allowing search
+  document.getElementById('in-'+side).value=label;
+  // Always fetch real entityId from API - never trust local ones
   sel[side]=null;
-  document.getElementById('in-'+side).value=label+' ✓';
   document.getElementById('sbtn').disabled=true;
-  document.getElementById('sbtn').textContent='Confirming airport…';
+  document.getElementById('sbtn').textContent='⏳ Confirming…';
   try{
     const r=await fetch('/api/search-airport?q='+encodeURIComponent(skyId));
     const json=await r.json();
     const data=json.data||[];
-    const match=data.find(i=>i.skyId===skyId)||data[0];
+    // Find exact IATA match first, then fall back to first result
+    const match=data.find(i=>i.skyId===skyId)||data.find(i=>i.entityType==='AIRPORT')||data[0];
     if(match){
-      sel[side]={skyId:match.skyId||skyId,entityId:match.entityId||entityId,label};
+      const resolvedSkyId=match.skyId||skyId;
+      const resolvedEntityId=match.entityId||'';
+      console.log(side+' resolved: skyId='+resolvedSkyId+' entityId='+resolvedEntityId);
+      sel[side]={skyId:resolvedSkyId,entityId:resolvedEntityId,label};
     } else {
-      sel[side]={skyId,entityId,label};
+      console.warn(side+' no API match for '+skyId+', using hasRealEntityId='+hasRealEntityId);
+      sel[side]={skyId,entityId:hasRealEntityId?entityId:'',label};
     }
   }catch(e){
-    sel[side]={skyId,entityId,label};
+    console.error('Airport confirm error:',e);
+    sel[side]={skyId,entityId:hasRealEntityId?entityId:'',label};
   }
-  document.getElementById('in-'+side).value=label;
-  updateSearchBtn();
-}
-
-function updateSearchBtn(){
-  const btn=document.getElementById('sbtn');
-  if(sel.from&&sel.to){
-    btn.disabled=false;
-    btn.textContent='Search Flights';
-  } else {
-    btn.disabled=false;
-    btn.textContent='Search Flights';
-  }
+  document.getElementById('sbtn').disabled=false;
+  document.getElementById('sbtn').textContent='Search Flights';
 }
 
 function hideDrop(side){document.getElementById('dp-'+side).style.display='none';}
