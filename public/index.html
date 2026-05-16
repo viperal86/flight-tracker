@@ -692,23 +692,20 @@ async function doSearch(){
   if(!from||!to||!date){toast('⚠ Select origin & destination from the list');return;}
   const btn=document.getElementById('sbtn');
   btn.disabled=true; btn.textContent='Searching…';
-  document.getElementById('res').innerHTML=`<div class="ld"><div class="spin"></div> Fetching live prices (5–10s)…</div>`;
+  document.getElementById('res').innerHTML=`<div class="ld"><div class="spin"></div> Fetching live prices (10–15s)…</div>`;
   try{
-    console.log('FROM:', JSON.stringify(sel.from));
-    console.log('TO:', JSON.stringify(sel.to));
+    // Use smart-search — server resolves entityIds automatically
     const p=new URLSearchParams({
-      originSkyId:from.skyId,
-      destinationSkyId:to.skyId,
-      originEntityId:from.entityId,
-      destinationEntityId:to.entityId,
+      origin: from.skyId,
+      destination: to.skyId,
       date,
-      adults:document.getElementById('pax').value,
-      cabinClass:document.getElementById('cabin').value,
+      adults: document.getElementById('pax').value,
+      cabinClass: document.getElementById('cabin').value,
     });
-    console.log('Params:', p.toString());
     const ret=document.getElementById('ret').value;
     if(ret) p.set('returnDate',ret);
-    const r=await fetch('/api/search-flights?'+p);
+    console.log('Smart search:', p.toString());
+    const r=await fetch('/api/smart-search?'+p);
     const json=await r.json();
     renderResults(json,from,to);
   }catch(e){
