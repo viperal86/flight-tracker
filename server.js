@@ -339,7 +339,7 @@ app.get('/api/search-flights', async (req, res) => {
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString(), alertCount: loadAlerts().length }));
 
-app.listen(CONFIG.PORT, () => console.log(`✈️  Flight tracker running on port ${CONFIG.PORT}`));
+app.listen(CONFIG.PORT, () => console.log(`✈️  Flight tracker running on port ${CONFIG.PORT} — v${Date.now()}`));
 
 // Debug endpoint — test airport search directly
 app.get('/api/debug-airport', async (req, res) => {
