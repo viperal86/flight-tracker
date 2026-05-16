@@ -78,9 +78,31 @@ async function searchFlightsWithPolling(params, maxAttempts = 6) {
   return lastJson;
 }
 
+async function resolveEntityId(skyId, fallbackEntityId) {
+  const res = await fetch(`https://${API_HOST}/api/v1/flights/searchAirport?query=${encodeURIComponent(skyId)}&locale=en-US`, { headers: HEADERS });
+  const json = await res.json();
+  const data = json.data || [];
+  const match = data.find(i => i.navigation?.relevantFlightParams?.skyId === skyId)
+             || data.find(i => i.navigation?.entityType === 'AIRPORT')
+             || data[0];
+  return match?.navigation?.relevantFlightParams?.entityId || fallbackEntityId;
+}
+
 async function getLowestPrice({ originSkyId, destinationSkyId, originEntityId, destinationEntityId, date, adults = 1, cabinClass = 'economy', returnDate }) {
+  let resolvedOriginEntityId = originEntityId;
+  let resolvedDestEntityId = destinationEntityId;
+  try {
+    [resolvedOriginEntityId, resolvedDestEntityId] = await Promise.all([
+      resolveEntityId(originSkyId, originEntityId),
+      resolveEntityId(destinationSkyId, destinationEntityId),
+    ]);
+  } catch(e) {
+    console.log('Airport lookup failed, using stored entityIds:', e.message);
+  }
+
   const json = await searchFlightsWithPolling({
-    originSkyId, destinationSkyId, originEntityId, destinationEntityId,
+    originSkyId, destinationSkyId,
+    originEntityId: resolvedOriginEntityId, destinationEntityId: resolvedDestEntityId,
     date, adults, cabinClass, ...(returnDate && { returnDate })
   }, 2); // Only 2 polls for background checks to save API quota
   const itineraries = json?.data?.itineraries || [];
