@@ -281,6 +281,52 @@ app.get('/api/search-airport', async (req, res) => {
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
+// Smart search — resolves airport entityIds server-side then searches flights
+app.get('/api/smart-search', async (req, res) => {
+  try {
+    const { origin, destination, date, returnDate, adults, cabinClass } = req.query;
+    if (!origin || !destination || !date) {
+      return res.status(400).json({ error: 'Missing origin, destination, or date' });
+    }
+
+    // Resolve both airports in parallel
+    const [origRes, destRes] = await Promise.all([
+      fetch(`https://${API_HOST}/api/v1/flights/searchAirport?query=${encodeURIComponent(origin)}&locale=en-US`, { headers: HEADERS }),
+      fetch(`https://${API_HOST}/api/v1/flights/searchAirport?query=${encodeURIComponent(destination)}&locale=en-US`, { headers: HEADERS }),
+    ]);
+    const [origJson, destJson] = await Promise.all([origRes.json(), destRes.json()]);
+
+    const origData = origJson.data || [];
+    const destData = destJson.data || [];
+
+    // Prefer airport over city
+    const orig = origData.find(i => i.navigation?.entityType === 'AIRPORT') || origData[0];
+    const dest = destData.find(i => i.navigation?.entityType === 'AIRPORT') || destData[0];
+
+    if (!orig || !dest) {
+      return res.json({ error: 'Airport not found', origData, destData });
+    }
+
+    const originSkyId = orig.navigation.relevantFlightParams.skyId;
+    const originEntityId = orig.navigation.relevantFlightParams.entityId;
+    const destinationSkyId = dest.navigation.relevantFlightParams.skyId;
+    const destinationEntityId = dest.navigation.relevantFlightParams.entityId;
+
+    console.log(`Smart search: ${originSkyId}(${originEntityId}) -> ${destinationSkyId}(${destinationEntityId})`);
+
+    const result = await searchFlightsWithPolling({
+      originSkyId, originEntityId, destinationSkyId, destinationEntityId,
+      date, adults: adults || 1, cabinClass: cabinClass || 'economy',
+      ...(returnDate && { returnDate })
+    });
+
+    res.json(result || { data: { itineraries: [] } });
+  } catch(e) {
+    console.error('Smart search error:', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // Search flights proxy — polls until results arrive
 app.get('/api/search-flights', async (req, res) => {
   try {
